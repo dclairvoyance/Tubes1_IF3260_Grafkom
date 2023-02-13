@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrawOI</title>
+    <script src="utils.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="row">
+        <div class="column left">
+            <h1>Daftar Objek</h1>
+        </div>
+        <div class="column middle">
+            <canvas id="canvas" onmousemove="mouseMoveListener(event)" width="750px" height="750px"></canvas>
+        </div>
+        <div class="column right">
+            <h1>Toolbar</h1>
+            <div class="toolbar">
+                <div class="tool">
+                    <h2>New Object</h2>
+                    <button>Polygon</button>
+                    <button>Polygon Strips</button>
+                </div>
+                <div class="tool">
+                    <h2>Properties</h2>
+                </div>
+                <div class="tool">
+                    <h2>Utilities</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
