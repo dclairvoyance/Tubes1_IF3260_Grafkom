@@ -25,9 +25,20 @@
                     <h2>New Object</h2>
                     <button onclick="setPolygon()">Polygon</button>
                     <button>Polygon Strips</button>
+                    <button onclick="rectangle()">Rectangle</button>
                 </div>
                 <div class="tool">
                     <h2>Properties</h2>
+                        <div>
+                            <div>
+                            Scale X
+                            <input id="scaleX" type="range" min="-10" max ="10" step="0.01" value="0">
+                            </div>
+                            <div>
+                            Scale Y
+                            <input id="scaleY" type="range" min="-10" max ="10" step="0.01" value="0">
+                            </div>
+                        </div>
                 </div>
                 <div class="tool">
                     <h2>Utilities</h2>
@@ -36,6 +47,7 @@
         </div>
     </div>
     <script src="script.js"></script>
+    <script src="rectangle.js"></script>
 </body>
 
 </html>
