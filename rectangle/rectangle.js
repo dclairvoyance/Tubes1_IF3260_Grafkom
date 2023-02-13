@@ -10,13 +10,16 @@ function main() {
     }
 
     var program = webglUtils.createProgramFromScripts(gl, ["vertex-shader-2d", "fragment-shader-2d"]);
-
+    var scale = [1, 1];
+    var color = [0,0,1, 1,0,0, 0,1,0, 1,0,1,1,0,1,1,0,1];
     // look up where the vertex data needs to go.
     var positionLocation = gl.getAttribLocation(program, "a_position");
   
     // lookup uniforms
     var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
-    var colorLocation = gl.getUniformLocation(program, "u_color");
+    var color_buffer = gl.createBuffer ();
+    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW);
     var scaleLocation = gl.getUniformLocation(program, "u_scale");
 
     var positionBuffer = gl.createBuffer();
@@ -24,8 +27,7 @@ function main() {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Put geometry data into buffer
     setGeometry(gl);
-    var scale = [1, 1];
-    var color = [1.0, 0.0, 0.0, 1.0];
+    
     drawScene();
     var colors = [
         [ 0.0, 0.0, 0.0, 1.0],  // black
@@ -71,6 +73,7 @@ function main() {
     
         // Bind the position buffer.
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
     
         // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
         var size = 2;          // 2 components per iteration
@@ -84,9 +87,13 @@ function main() {
         // set the resolution
         gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
     
-        // set the color
-        gl.uniform4fv(colorLocation, color);
+        // get the attribute location
+        var vertColor = gl.getAttribLocation(program, "vertColor");
+ 
+        // point attribute to the volor buffer object
+        gl.vertexAttribPointer(vertColor, 3, gl.FLOAT, false,0,0) ;
 
+        gl.enableVertexAttribArray(vertColor);
         // Set the scale.
         gl.uniform2fv(scaleLocation, scale);
     
