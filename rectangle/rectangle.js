@@ -25,8 +25,25 @@ function main() {
     // Put geometry data into buffer
     setGeometry(gl);
     var scale = [1, 1];
-    var color = [Math.random(), Math.random(), Math.random(), 1];
+    var color = [1.0, 0.0, 0.0, 1.0];
     drawScene();
+    var colors = [
+        [ 0.0, 0.0, 0.0, 1.0],  // black
+        [ 1.0, 0.0, 0.0, 1.0],  // red
+        [ 1.0, 1.0, 0.0, 1.0],  // yellow
+        [ 0.0, 1.0, 0.0, 1.0],  // green
+        [ 0.0, 0.0, 1.0, 1.0],  // blue
+        [ 1.0, 0.0, 1.0, 1.0],  // magenta
+        [ 0.0, 1.0, 1.0, 1.0]  // cyan
+    ];
+    var m = document.getElementById("mymenu");
+    m.addEventListener("click", function() {
+       color = colors[m.selectedIndex]
+    });
+    var a = document.getElementById("Button1")
+    a.addEventListener("click", function(){
+    drawScene();
+    });
 
     document.getElementById("scaleX").onchange = function(event){
         scale[0] = event.target.value;
@@ -36,6 +53,7 @@ function main() {
         scale[1] = event.target.value;
         drawScene();
     };
+
     function drawScene() {
         webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     
@@ -86,11 +104,11 @@ function setGeometry(gl) {
         new Float32Array([
             // left column
             0, 0,
-            30, 0,
+            50, 0,
             0, 150,
             0, 150,
-            30, 0,
-            30, 150
+            50, 0,
+            50, 150
         ]),
         gl.STATIC_DRAW);
   }
