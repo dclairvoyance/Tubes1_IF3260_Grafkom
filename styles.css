@@ -25,7 +25,6 @@
 }
 
 #canvas {
-    top: 50%;
     transform: translateY(3.5%);
     background-color: white;
     display: inline;
