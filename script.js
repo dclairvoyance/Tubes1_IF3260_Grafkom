@@ -57,15 +57,6 @@ var currentModel = [];
 const setPolygon = () => {
     currentModel.push("polygon");
 }
-const setLine = () => {
-    currentModel = "line";
-}
-const setSquare = () =>{
-    currentModel = "square";
-}
-const setRectangle = () =>{
-    currentModel = "rectangle";
-}
 
 const setLine = () => {
     currentModel.push("line");
