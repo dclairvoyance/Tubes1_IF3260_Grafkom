@@ -57,6 +57,15 @@ var currentModel = [];
 const setPolygon = () => {
     currentModel.push("polygon");
 }
+const setLine = () => {
+    currentModel = "line";
+}
+const setSquare = () =>{
+    currentModel = "square";
+}
+const setRectangle = () =>{
+    currentModel = "rectangle";
+}
 
 const setLine = () => {
     currentModel.push("line");
@@ -122,7 +131,24 @@ const mouseMoveListener = (e) => {
         }
     }
 }
-
+var colorMenu = [
+    [ 0.0, 0.0, 0.0, 1.0],  // black
+    [ 1.0, 0.0, 0.0, 1.0],  // red
+    [ 1.0, 1.0, 0.0, 1.0],  // yellow
+    [ 0.0, 1.0, 0.0, 1.0],  // green
+    [ 0.0, 0.0, 1.0, 1.0],  // blue
+    [ 1.0, 0.0, 1.0, 1.0],  // magenta
+    [ 0.0, 1.0, 1.0, 1.0]  // cyan
+];
+var color = [0.0,0.0,0.0,1.0];
+var m = document.getElementById("mymenu");
+    m.addEventListener("click", function() {
+       color = colorMenu[m.selectedIndex]
+    });
+var a = document.getElementById("Button1")
+    a.addEventListener("click", function(){
+    render();
+    });
 
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
@@ -137,8 +163,10 @@ canvas.addEventListener('mousedown', (e) => {
      
     for (let i = 0; i < count; i++) {
         vertices.push([x, y]);
-        colors.push([0, 0, 0, 1]);
+        colors.push(color);
+        
     }
+    
     isDown = true;
 })
 
