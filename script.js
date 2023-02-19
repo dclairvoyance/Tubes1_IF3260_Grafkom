@@ -36,22 +36,23 @@ void main() {
     gl_FragColor = fColor;
 }`;
 
+
+
 // canvas purposes
 const canvas = document.getElementById('canvas');
 const gl = setupWebGL(canvas);
 
-let vertices = [
-];
-let colors = [
-];
+let vertices = [];
+let colors = [];
 
 let isDown = false;
 const offset = (3.5/100) * window.innerHeight;
-let currentModel = "";
+let currentModel = "line";
 
 const setPolygon = () => {
     currentModel = "polygon";
 }
+
 
 const isNearby = (e) => {
     let nearby = false;
@@ -73,18 +74,36 @@ const mouseMoveListener = (e) => {
         // convert pixel to clip space (-1 to 1)
         let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
         let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-        vertices[vertices.length-1][0] = x;
-        vertices[vertices.length-1][1] = y;
-        vertices[vertices.length-2][1] = y;
-        vertices[vertices.length-3][0] = x;
+        let dx = 0;
+        let dy = 0;
+        let d = 0;
+        if(currentModel == "rectangle"){
+            vertices[vertices.length-1][0] = x;
+            vertices[vertices.length-1][1] = y;
+            vertices[vertices.length-2][1] = y;
+            vertices[vertices.length-3][0] = x;
+        } else if (currentModel == "line"){
+            vertices[vertices.length-1][1] = y;
+            vertices[vertices.length-1][0] = x;
+        } else if (currentModel == "square"){
+            
+        }
     }
 }
+
 
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-    for (let i = 0; i < 4; i++) {
+    let count = 2;
+    if ((currentModel == "rectangle") || (currentModel == "square")){
+        count = 4;
+    } else if(currentModel = "line"){
+        count = 2;
+    }
+     
+    for (let i = 0; i < count; i++) {
         vertices.push([x, y]);
         colors.push([0, 0, 0, 1]);
     }
@@ -125,10 +144,25 @@ function render() {
     gl.enableVertexAttribArray(vColor);
 
     // gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
+    
+    //gl tool per model
+    let vertice_count = 0;
+    if(currentModel == "rectangle"){
+        vertice_count = 4;
+        gltool = gl.TRIANGLE_STRIP;
+    }else if(currentModel == "line"){
+        vertice_count = 2;
+        gltool = gl.LINE_STRIP;
+    }else if (currentModel == "square"){
 
-    for (let i = 0; i < vertices.length; i+= 4) {
-        gl.drawArrays(gl.TRIANGLE_STRIP, i, 4);
+        gltool = gl.TRIANGLE_FAN;
+    }
+
+
+    for (let i = 0; i < vertices.length; i+= vertice_count) {
+        gl.drawArrays(gltool, i, vertice_count);
     }
 
     window.requestAnimFrame(render);
 }
+
