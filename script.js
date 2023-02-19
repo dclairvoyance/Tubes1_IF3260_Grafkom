@@ -44,15 +44,35 @@ const gl = setupWebGL(canvas);
 
 let vertices = [];
 let colors = [];
+let list_of_vertices = [];
 
+let dx = 0;
+let dy = 0;
+let d = 0;
 let isDown = false;
 const offset = (3.5/100) * window.innerHeight;
-let currentModel = "line";
+var currentModel = [];
+
 
 const setPolygon = () => {
-    currentModel = "polygon";
+    currentModel.push("polygon");
 }
 
+const setLine = () => {
+    currentModel.push("line");
+}
+
+const setSquare = () => {
+    currentModel.push("square");
+}
+
+const setRectangle = () => {
+    currentModel.push("rectangle");
+}
+
+
+gl.clearColor(0.95, 0.95, 0.95, 1);
+gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 const isNearby = (e) => {
     let nearby = false;
@@ -74,19 +94,31 @@ const mouseMoveListener = (e) => {
         // convert pixel to clip space (-1 to 1)
         let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
         let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-        let dx = 0;
-        let dy = 0;
-        let d = 0;
-        if(currentModel == "rectangle"){
+        
+        //vertices per model and shapes
+        if(currentModel[currentModel.length-1] == "rectangle"){
             vertices[vertices.length-1][0] = x;
             vertices[vertices.length-1][1] = y;
             vertices[vertices.length-2][1] = y;
             vertices[vertices.length-3][0] = x;
-        } else if (currentModel == "line"){
+            list_of_vertices.push(vertices);
+        } else if (currentModel[currentModel.length-1] == "line"){
             vertices[vertices.length-1][1] = y;
             vertices[vertices.length-1][0] = x;
-        } else if (currentModel == "square"){
-            
+            list_of_vertices.push(vertices);
+        } else if (currentModel[currentModel.length-1] == "square"){
+            dx = x - vertices[vertices.length-1][0];
+            dy = y - vertices[vertices.length-1][1];
+            d = Math.min(Math.abs(dx),Math.abs(dy));
+            dx > 0? dx = d : dx = -d;
+            dy > 0? dy = d : dy = -d;
+            vertices[vertices.length-3][1] = vertices[vertices.length-3][1] + dy;
+            vertices[vertices.length-2][0] = vertices[vertices.length-2][0] + dx;
+            vertices[vertices.length-2][1] = vertices[vertices.length-2][1] + dy;
+            vertices[vertices.length-1][0] = vertices[vertices.length-1][0] + dx;
+            list_of_vertices.push(vertices);
+        }else{
+            //POLYGON
         }
     }
 }
@@ -97,9 +129,9 @@ canvas.addEventListener('mousedown', (e) => {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
     let count = 2;
-    if ((currentModel == "rectangle") || (currentModel == "square")){
+    if ((currentModel[currentModel.length-1] == "rectangle") || (currentModel[currentModel.length-1] == "square")){
         count = 4;
-    } else if(currentModel = "line"){
+    } else if(currentModel[currentModel.length-1] = "line"){
         count = 2;
     }
      
@@ -147,22 +179,31 @@ function render() {
     
     //gl tool per model
     let vertice_count = 0;
-    if(currentModel == "rectangle"){
-        vertice_count = 4;
-        gltool = gl.TRIANGLE_STRIP;
-    }else if(currentModel == "line"){
-        vertice_count = 2;
-        gltool = gl.LINE_STRIP;
-    }else if (currentModel == "square"){
-
-        gltool = gl.TRIANGLE_FAN;
+    for(let i = 0; i < list_of_vertices.length; i+= 1){
+        if(currentModel[i] == "rectangle"){
+            vertice_count = 4;
+            gltool = gl.TRIANGLE_STRIP;
+            for (let i = 0; i < vertices.length; i+= vertice_count) {
+                gl.drawArrays(gltool, i, vertice_count);
+            }
+        
+        }else if(currentModel[i] == "line"){
+            vertice_count = 2;
+            gltool = gl.LINE_STRIP;
+            for (let i = 0; i < vertices.length; i+= vertice_count) {
+                gl.drawArrays(gltool, i, vertice_count);
+            }
+        
+        }else if (currentModel[i] == "square"){
+            vertice_count = 4;
+            gltool = gl.TRIANGLE_FAN;
+            for (let i = 0; i < vertices.length; i+= vertice_count) {
+                gl.drawArrays(gltool, i, vertice_count);
+            }
+        }else{
+            //POLYGON
+        }
     }
-
-
-    for (let i = 0; i < vertices.length; i+= vertice_count) {
-        gl.drawArrays(gltool, i, vertice_count);
-    }
-
     window.requestAnimFrame(render);
 }
 
