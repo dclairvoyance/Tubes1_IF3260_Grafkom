@@ -52,6 +52,15 @@ let currentModel = "line";
 const setPolygon = () => {
     currentModel = "polygon";
 }
+const setLine = () => {
+    currentModel = "line";
+}
+const setSquare = () =>{
+    currentModel = "square";
+}
+const setRectangle = () =>{
+    currentModel = "rectangle";
+}
 
 
 const isNearby = (e) => {
@@ -86,6 +95,10 @@ const mouseMoveListener = (e) => {
             vertices[vertices.length-1][1] = y;
             vertices[vertices.length-1][0] = x;
         } else if (currentModel == "square"){
+            vertices[vertices.length-1][0] = x;
+            vertices[vertices.length-1][1] = x;
+            vertices[vertices.length-2][1] = x;
+            vertices[vertices.length-3][0] = x;
             
         }
     }
@@ -154,8 +167,8 @@ function render() {
         vertice_count = 2;
         gltool = gl.LINE_STRIP;
     }else if (currentModel == "square"){
-
-        gltool = gl.TRIANGLE_FAN;
+        vertice_count = 4;
+        gltool = gl.TRIANGLE_STRIP;
     }
 
 
