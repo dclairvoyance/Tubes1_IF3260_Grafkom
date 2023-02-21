@@ -54,6 +54,8 @@ const offset = (3.5/100) * window.innerHeight;
 var currentModel = [];
 var drawModel="";
 let cursor = false
+let objectNum = -1
+let vertexNum = -1
 
 const setPolygon = () => {
     drawModel ="polygon"
@@ -74,6 +76,13 @@ const choose =() =>{
     cursor = true
 
 }
+     
+let list = document.getElementById("listObjek");
+    
+currentModel.forEach((item) => {
+    
+});
+
 
 gl.clearColor(0.95, 0.95, 0.95, 1);
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -134,7 +143,26 @@ var colorMenu = [
 var color = [0.0,0.0,0.0,1.0];
 var m = document.getElementById("mymenu");
     m.addEventListener("click", function() {
-       color = colorMenu[m.selectedIndex]
+        color = colorMenu[m.selectedIndex]
+        if(objectNum != -1 && vertexNum != -1){
+            if(currentModel[objectNum-1] == "rectangle" || currentModel[objectNum-1] == "square"){
+                for (let i = 4*(objectNum-1); i < 4*(objectNum); i++) {
+                    if(i == (4*(objectNum-1)+vertexNum)){
+                        colors[i] = color;               
+                    }
+                    else {
+                        colors[i] = colors[i]
+                    }     
+                }
+            }
+        }
+        else if(objectNum != -1){
+            if(currentModel[objectNum-1] == "rectangle" || currentModel[objectNum-1] == "square"){
+                for (let i = 4*(objectNum-1); i < 4*(objectNum); i++) {
+                    colors[i] = color;                    
+                }
+            }
+        }
     });
 var a = document.getElementById("Button1")
     a.addEventListener("click", function(){
@@ -145,7 +173,7 @@ var b = document.getElementById("test")
     b.addEventListener("click", function(){
         console.log(currentModel)
         console.log(list_of_vertices)
-        console.log(flatten(vertices))
+        console.log(colors)
     });
 
 canvas.addEventListener('mousedown', (e) => {
@@ -170,7 +198,7 @@ canvas.addEventListener('mousedown', (e) => {
 })
 
 canvas.addEventListener("mouseup", (e) => {
-    if (isDown) {
+    if (isDown) {d
         //vertices per model and shapes
         if(drawModel == "rectangle"){
             list_of_vertices.push(vertices);
@@ -185,6 +213,29 @@ canvas.addEventListener("mouseup", (e) => {
             //POLYGON
         }
     }
+    let li = document.createElement("button");
+    let lo = document.createElement("li");
+    let ul = document.createElement("ul")
+    li.innerText = currentModel[currentModel.length-1] + " " + currentModel.length;
+    li.value = currentModel.length
+    li.onclick= function(){
+                    objectNum = li.value
+                    vertexNum = -1
+                    console.log(li.value)}
+    lo.appendChild(li)
+    lo.appendChild(ul)
+    for(let i=0; i<4;i++){
+        let la = document.createElement("button")
+        la.innerText = "Vertex " + (i+1)
+        la.value = i
+        la.onclick = function(){
+                    vertexNum=la.value
+                    objectNum = li.value
+                    console.log(vertexNum)
+                    console.log(objectNum)}
+        ul.appendChild(la)
+    }
+    list.appendChild(lo);
     isDown = false;
 })
 
@@ -201,6 +252,7 @@ const cBuffer = gl.createBuffer();
 
 render();
 function render() {
+    
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
