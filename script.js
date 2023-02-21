@@ -52,24 +52,28 @@ let d = 0;
 let isDown = false;
 const offset = (3.5/100) * window.innerHeight;
 var currentModel = [];
-
+var drawModel="";
+let cursor = false
 
 const setPolygon = () => {
-    currentModel.push("polygon");
+    drawModel ="polygon"
 }
 
 const setLine = () => {
-    currentModel.push("line");
+    drawModel ="line"
 }
 
 const setSquare = () => {
-    currentModel.push("square");
+    drawModel ="square"
 }
 
 const setRectangle = () => {
-    currentModel.push("rectangle");
+    drawModel ="rectangle"
 }
+const choose =() =>{
+    cursor = true
 
+}
 
 gl.clearColor(0.95, 0.95, 0.95, 1);
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -89,38 +93,8 @@ const isNearby = (e) => {
 }
 
 const mouseMoveListener = (e) => {
-    // count mouse's coordinates
-    if (isDown) {
-        // convert pixel to clip space (-1 to 1)
-        let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-        let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-        
-        //vertices per model and shapes
-        if(currentModel[currentModel.length-1] == "rectangle"){
-            vertices[vertices.length-1][0] = x;
-            vertices[vertices.length-1][1] = y;
-            vertices[vertices.length-2][1] = y;
-            vertices[vertices.length-3][0] = x;
-            list_of_vertices.push(vertices);
-        } else if (currentModel[currentModel.length-1] == "line"){
-            vertices[vertices.length-1][1] = y;
-            vertices[vertices.length-1][0] = x;
-            list_of_vertices.push(vertices);
-        } else if (currentModel[currentModel.length-1] == "square"){
-            dx = x - vertices[vertices.length-1][0];
-            dy = y - vertices[vertices.length-1][1];
-            d = Math.min(Math.abs(dx),Math.abs(dy));
-            dx > 0? dx = d : dx = -d;
-            dy > 0? dy = d : dy = -d;
-            vertices[vertices.length-3][1] = vertices[vertices.length-3][1] + dy;
-            vertices[vertices.length-2][0] = vertices[vertices.length-2][0] + dx;
-            vertices[vertices.length-2][1] = vertices[vertices.length-2][1] + dy;
-            vertices[vertices.length-1][0] = vertices[vertices.length-1][0] + dx;
-            list_of_vertices.push(vertices);
-        }else{
-            //POLYGON
-        }
-    }
+    //count mouse's coordinates
+    
 }
 var colorMenu = [
     [ 0.0, 0.0, 0.0, 1.0],  // black
@@ -140,15 +114,24 @@ var a = document.getElementById("Button1")
     a.addEventListener("click", function(){
     render();
     });
+    
+var b = document.getElementById("test")
+    b.addEventListener("click", function(){
+        console.log(currentModel)
+        console.log(list_of_vertices)
+        console.log(colors)
+    });
 
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
     let count = 2;
-    if ((currentModel[currentModel.length-1] == "rectangle") || (currentModel[currentModel.length-1] == "square")){
+    
+
+    if ((drawModel == "rectangle") || (drawModel == "square")){
         count = 4;
-    } else if(currentModel[currentModel.length-1] = "line"){
+    } else if(drawModel = "line"){
         count = 2;
     }
      
@@ -162,6 +145,39 @@ canvas.addEventListener('mousedown', (e) => {
 })
 
 canvas.addEventListener("mouseup", (e) => {
+    if (isDown) {
+        // convert pixel to clip space (-1 to 1)
+        let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+        let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
+        //vertices per model and shapes
+        if(drawModel == "rectangle"){
+            vertices[vertices.length-1][0] = x;
+            vertices[vertices.length-1][1] = y;
+            vertices[vertices.length-2][1] = y;
+            vertices[vertices.length-3][0] = x;
+            list_of_vertices.push(vertices);
+            currentModel.push("rectangle");
+        } else if (drawModel == "line"){
+            vertices[vertices.length-1][1] = y;
+            vertices[vertices.length-1][0] = x;
+            list_of_vertices.push(vertices);
+            currentModel.push("line");
+        } else if (drawModel == "square"){
+            dx = x - vertices[vertices.length-1][0];
+            dy = y - vertices[vertices.length-1][1];
+            d = Math.min(Math.abs(dx),Math.abs(dy));
+            dx > 0? dx = d : dx = -d;
+            dy > 0? dy = d : dy = -d;
+            vertices[vertices.length-3][1] = vertices[vertices.length-3][1] + dy;
+            vertices[vertices.length-2][0] = vertices[vertices.length-2][0] + dx;
+            vertices[vertices.length-2][1] = vertices[vertices.length-2][1] + dy;
+            vertices[vertices.length-1][0] = vertices[vertices.length-1][0] + dx;
+            list_of_vertices.push(vertices);
+            currentModel.push("square");
+        }else{
+            //POLYGON
+        }
+    }
     isDown = false;
 })
 
@@ -198,6 +214,7 @@ function render() {
     
     //gl tool per model
     let vertice_count = 0;
+    
     for(let i = 0; i < list_of_vertices.length; i+= 1){
         if(currentModel[i] == "rectangle"){
             vertice_count = 4;
