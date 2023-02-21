@@ -94,7 +94,33 @@ const isNearby = (e) => {
 
 const mouseMoveListener = (e) => {
     //count mouse's coordinates
-    
+    if (isDown) {
+        // convert pixel to clip space (-1 to 1)
+        let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+        let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
+        //vertices per model and shapes
+        if(drawModel == "rectangle"){
+            vertices[vertices.length-1][0] = x;
+            vertices[vertices.length-1][1] = y;
+            vertices[vertices.length-2][1] = y;
+            vertices[vertices.length-3][0] = x;
+        } else if (drawModel == "line"){
+            vertices[vertices.length-1][1] = y;
+            vertices[vertices.length-1][0] = x;
+        } else if (drawModel == "square"){
+            dx = x - vertices[vertices.length-1][0];
+            dy = y - vertices[vertices.length-1][1];
+            d = Math.min(Math.abs(dx),Math.abs(dy));
+            dx > 0? dx = d : dx = -d;
+            dy > 0? dy = d : dy = -d;
+            vertices[vertices.length-3][1] = vertices[vertices.length-3][1] + dy;
+            vertices[vertices.length-2][0] = vertices[vertices.length-2][0] + dx;
+            vertices[vertices.length-2][1] = vertices[vertices.length-2][1] + dy;
+            vertices[vertices.length-1][0] = vertices[vertices.length-1][0] + dx;
+        }else{
+            //POLYGON
+        }
+    }
 }
 var colorMenu = [
     [ 0.0, 0.0, 0.0, 1.0],  // black
@@ -119,7 +145,7 @@ var b = document.getElementById("test")
     b.addEventListener("click", function(){
         console.log(currentModel)
         console.log(list_of_vertices)
-        console.log(colors)
+        console.log(flatten(vertices))
     });
 
 canvas.addEventListener('mousedown', (e) => {
@@ -134,7 +160,6 @@ canvas.addEventListener('mousedown', (e) => {
     } else if(drawModel = "line"){
         count = 2;
     }
-     
     for (let i = 0; i < count; i++) {
         vertices.push([x, y]);
         colors.push(color);
@@ -146,32 +171,14 @@ canvas.addEventListener('mousedown', (e) => {
 
 canvas.addEventListener("mouseup", (e) => {
     if (isDown) {
-        // convert pixel to clip space (-1 to 1)
-        let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-        let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
         //vertices per model and shapes
         if(drawModel == "rectangle"){
-            vertices[vertices.length-1][0] = x;
-            vertices[vertices.length-1][1] = y;
-            vertices[vertices.length-2][1] = y;
-            vertices[vertices.length-3][0] = x;
             list_of_vertices.push(vertices);
             currentModel.push("rectangle");
         } else if (drawModel == "line"){
-            vertices[vertices.length-1][1] = y;
-            vertices[vertices.length-1][0] = x;
             list_of_vertices.push(vertices);
             currentModel.push("line");
         } else if (drawModel == "square"){
-            dx = x - vertices[vertices.length-1][0];
-            dy = y - vertices[vertices.length-1][1];
-            d = Math.min(Math.abs(dx),Math.abs(dy));
-            dx > 0? dx = d : dx = -d;
-            dy > 0? dy = d : dy = -d;
-            vertices[vertices.length-3][1] = vertices[vertices.length-3][1] + dy;
-            vertices[vertices.length-2][0] = vertices[vertices.length-2][0] + dx;
-            vertices[vertices.length-2][1] = vertices[vertices.length-2][1] + dy;
-            vertices[vertices.length-1][0] = vertices[vertices.length-1][0] + dx;
             list_of_vertices.push(vertices);
             currentModel.push("square");
         }else{
