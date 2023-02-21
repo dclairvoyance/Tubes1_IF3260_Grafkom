@@ -145,10 +145,10 @@ var m = document.getElementById("mymenu");
     m.addEventListener("click", function() {
         color = colorMenu[m.selectedIndex]
         if(objectNum != -1 && vertexNum != -1){
-            if(currentModel[objectNum-1] == "rectangle" || currentModel[objectNum-1] == "square"){
+            if(currentModel[objectNum-1] == "rectangle" || currentModel[objectNum-1] == "square"){   
                 for (let i = 4*(objectNum-1); i < 4*(objectNum); i++) {
-                    if(i == (4*(objectNum-1)+vertexNum)){
-                        colors[i] = color;               
+                    if(i == (4*(objectNum-1)+Number(vertexNum))){
+                        colors[i] = color;
                     }
                     else {
                         colors[i] = colors[i]
@@ -169,12 +169,12 @@ var a = document.getElementById("Button1")
     render();
     });
     
-var b = document.getElementById("test")
-    b.addEventListener("click", function(){
-        console.log(currentModel)
-        console.log(list_of_vertices)
-        console.log(colors)
-    });
+// var b = document.getElementById("test")
+//     b.addEventListener("click", function(){
+//         console.log(currentModel)
+//         console.log(list_of_vertices)
+//         console.log(colors)
+//     });
 
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
@@ -213,6 +213,7 @@ canvas.addEventListener("mouseup", (e) => {
             //POLYGON
         }
     }
+    //Create List Button for shape and vertex
     let li = document.createElement("button");
     let lo = document.createElement("li");
     let ul = document.createElement("ul")
