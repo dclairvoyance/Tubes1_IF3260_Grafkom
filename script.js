@@ -28,9 +28,11 @@ let colors = [];    // list of [r, g, b, a] where 0 < r, g, b, a < 1
 // state
 let isDown = false; // true when mouse is clicked
 let cursor = false;
+let isDrag = false;
 
 let models = [];    // list of model
 let drawModel = ""; // current model
+let dragModel = "";
 let idxVertices=[];
 let dx = 0;
 let dy = 0;
@@ -45,6 +47,7 @@ const verticesInShape = {
 // list objects
 let objectNum = -1;
 let vertexNum = -1;
+let objectFirstNum =-1; 
 
 const polygonBtn = document.getElementById("polygonBtn");
 let isFirstVertex = true;
@@ -92,6 +95,87 @@ const listObject = document.getElementById("listObject");
 
 const mouseMoveListener = (e) => {
     // count mouse's coordinates
+    if(isDrag) {
+        let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+        let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
+        dragModel = models[objectNum]
+        if (dragModel == "rectangle") {
+            vertices[idx][0] = x;
+            vertices[idx][1] = y;
+            if(vertexNum==3){
+                vertices[idx-1][1] = y;
+                vertices[idx-2][0] = x;
+            }
+            else if(vertexNum==2){
+                vertices[idx+1][1] = y;
+                vertices[idx-2][0] = x;
+            }
+            else if(vertexNum==1){
+                vertices[idx-1][1] = y;
+                vertices[idx+2][0] = x;
+            }
+            else if(vertexNum==0){
+                vertices[idx+1][1] = y;
+                vertices[idx+2][0] = x;
+            }
+                
+        } else if (dragModel == "line") {
+            vertices[idx][0] = x;
+            vertices[idx][1] = y;
+        } else if (dragModel == "square") {
+            if(vertexNum==3){
+                dx = x - vertices[idx-3][0];
+                dy = y - vertices[idx-3][1];
+                d = Math.min(Math.abs(dx), Math.abs(dy));
+                dx > 0 ? dx = d : dx = -d;
+                dy > 0 ? dy = d : dy = -d;
+                vertices[idx][0] = vertices[idx-3][0] + dx;
+                vertices[idx][1] = vertices[idx-3][1] + dy;
+                vertices[idx-1][1] = vertices[idx-3][1] + dy;
+                vertices[idx-2][0] = vertices[idx-3][0] + dx;
+            }
+            else if(vertexNum==2){
+                dx = x - vertices[idx-1][0];
+                dy = y - vertices[idx-1][1];
+                d = Math.min(Math.abs(dx), Math.abs(dy));
+                dx > 0 ? dx = d : dx = -d;
+                dy > 0 ? dy = d : dy = -d;
+                vertices[idx][0] = vertices[idx-1][0] + dx;
+                vertices[idx][1] = vertices[idx-1][1] + dy;
+                vertices[idx+1][1] = vertices[idx-1][1] + dy;
+                vertices[idx-2][0] = vertices[idx-1][0] + dx;
+            }
+            else if(vertexNum==1){
+                dx = x - vertices[idx+1][0];
+                dy = y - vertices[idx+1][1];
+                d = Math.min(Math.abs(dx), Math.abs(dy));
+                dx > 0 ? dx = d : dx = -d;
+                dy > 0 ? dy = d : dy = -d;
+                vertices[idx][0] = vertices[idx+1][0] + dx;
+                vertices[idx][1] = vertices[idx+1][1] + dy;
+                vertices[idx-1][1] = vertices[idx+1][1] + dy;
+                vertices[idx+2][0] = vertices[idx+1][0] + dx;
+            }
+            else if(vertexNum==0){
+                dx = x - vertices[idx+3][0];
+                dy = y - vertices[idx+3][1];
+                d = Math.min(Math.abs(dx), Math.abs(dy));
+                dx > 0 ? dx = d : dx = -d;
+                dy > 0 ? dy = d : dy = -d;
+                vertices[idx][0] = vertices[idx+3][0] + dx;
+                vertices[idx][1] = vertices[idx+3][1] + dy;
+                vertices[idx+1][1] = vertices[idx+3][1] + dy;
+                vertices[idx+2][0] = vertices[idx+3][0] + dx;
+            }
+        } else if (dragModel == "polygon") {
+            vertices[idx][0] = x;
+            vertices[idx][1] = y;
+        }
+        else {
+
+        }
+    }
+
     if (isDown) {
         // convert pixel to clip space (-1 to 1)
         let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
@@ -195,7 +279,9 @@ canvas.addEventListener('mousedown', (e) => {
     let verticeNearby = isNearby(e)
     if (verticeNearby.length > 0){
         idx = objectNearby(vertices,verticeNearby[0]);
-        objectNum,vertexNum = objectIdx(idxVertices,idx);
+        objectNum,vertexNum,objectFirstNum = objectIdx(idxVertices,idx);
+        console.log(objectNum,vertexNum,objectFirstNum,idx)
+        isDrag=true
     }
 
     if (drawModel == "polygon") {
@@ -280,7 +366,7 @@ canvas.addEventListener("mouseup", (e) => {
         }
         listObject.appendChild(newElList);
     }
-
+    isDrag = false
     isDown = false;
 })
 

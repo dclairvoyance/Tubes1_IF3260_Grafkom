@@ -19,15 +19,18 @@ const isNearby = (e) => {
 const objectIdx = (idxVertices,idx) => {
     objectNum=-1
     vertexNum=-1
+    objectFirstNum = -1
     for( i=0;i<idxVertices.length;i++){
         if(idxVertices[i]<=idx){
-            objectNum=i+1
-            vertexNum=idx-idxVertices[i]+1
+            objectNum=i
+            vertexNum=idx-idxVertices[i]
+            objectFirstNum=idxVertices[i]
         }
     }
     return {
         objectNum,
-        vertexNum
+        vertexNum,
+        objectFirstNum
     };
 }
 
