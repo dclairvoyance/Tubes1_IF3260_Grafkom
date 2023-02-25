@@ -31,6 +31,7 @@ let cursor = false;
 
 let models = [];    // list of model
 let drawModel = ""; // current model
+let idxVertices=[];
 let dx = 0;
 let dy = 0;
 let d = 0;
@@ -76,7 +77,7 @@ const setRectangle = () => {
 }
 
 const choose = () => {
-    cursor = true
+    drawModel=""
 
 }
 
@@ -191,12 +192,25 @@ changeColor.addEventListener("click", function () {
     render();
 });
 
+//Moving vertex
+var sliderX = document.getElementById("X")
+var sliderY = document.getElementById("Y")
+// sliderX.oninput = function (){
+//     if()
+// }
+
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
 
     vertexNum = -1;
+
+    let verticeNearby = isNearby(e)
+    if (verticeNearby.length > 0){
+        idx = objectNearby(vertices,verticeNearby[0]);
+        objectNum,vertexNum = objectIdx(idxVertices,idx);
+    }
 
     if (drawModel == "polygon") {
         // if first vertex
@@ -229,6 +243,7 @@ canvas.addEventListener('mousedown', (e) => {
         isDown = true;
     } else if (drawModel != "") {
         models.push(drawModel);
+        idxVertices.push(vertices.length)
         objectNum = models.length;
 
         for (let i = 0; i < verticesInShape[drawModel]; i++) {
