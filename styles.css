@@ -6,14 +6,6 @@
     color: white;
 }
 
-.mymenu{
-    box-sizing: border-box;
-    font-family: "Lato", sans-serif;
-    padding: 0;
-    margin: 0;
-    color: black;
-}
-
 .column {
     float: left;
     text-align: center;
@@ -64,4 +56,16 @@ button {
 h2 {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.colorMenu{
+    box-sizing: border-box;
+    font-family: "Lato", sans-serif;
+    padding: 0;
+    margin: 0;
+    color: black;
+}
+
+.btnClicked {
+    border: 1.5px solid white;
 }

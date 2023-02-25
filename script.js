@@ -1,23 +1,3 @@
-/**
-const vSource = `
-    attribute vec4 vPosition;
-    atrribute vec4 vColor;
-    varying vec4 fColor;
-    void main() {
-        gl_Position = vPosition;
-        fColor = vColor;
-    }
-`;
-
-const fSource = `
-    precision mediump float;
-    varying vec4 fColor;
-    void main() {
-        gl_FragColor = fColor;
-    }
-`;
-**/
-
 const vSource = `
 attribute vec4 vPosition;
 attribute vec4 vColor;
@@ -36,56 +16,53 @@ void main() {
     gl_FragColor = fColor;
 }`;
 
-
-
-// canvas purposes
+// canvas setup
 const canvas = document.getElementById('canvas');
 const gl = setupWebGL(canvas);
+const offset = (3.5 / 100) * window.innerHeight;    // corrections for css
 
-let vertices = [];
-let colors = [];
-let list_of_vertices = [];
+let vertices = [];  // list of [x, y] where -1 < x, y < 1
+let colors = [];    // list of [r, g, b, a] where 0 < r, g, b, a < 1
 
+// state
+let isDown = false; // true when mouse is clicked
+let cursor = false;
+
+let models = [];    // list of model
+let drawModel = ""; // current model
 let dx = 0;
 let dy = 0;
 let d = 0;
-let isDown = false;
-const offset = (3.5/100) * window.innerHeight;
-var currentModel = [];
-var drawModel="";
-let cursor = false
-let objectNum = -1
-let vertexNum = -1
+
+const verticesInShape = {
+    rectangle: 4, 
+    square: 4, 
+    line: 2};
+
+// list objects
+let objectNum = -1;
+let vertexNum = -1;
 
 const setPolygon = () => {
-    drawModel ="polygon"
+    drawModel = "polygon"
 }
 
 const setLine = () => {
-    drawModel ="line"
+    drawModel = "line"
 }
 
 const setSquare = () => {
-    drawModel ="square"
+    drawModel = "square"
 }
 
 const setRectangle = () => {
-    drawModel ="rectangle"
+    drawModel = "rectangle"
 }
-const choose =() =>{
+
+const choose = () => {
     cursor = true
 
 }
-     
-let list = document.getElementById("listObjek");
-    
-currentModel.forEach((item) => {
-    
-});
-
-
-gl.clearColor(0.95, 0.95, 0.95, 1);
-gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 const isNearby = (e) => {
     let nearby = false;
@@ -94,149 +71,151 @@ const isNearby = (e) => {
     let verticeNearby = vertices.filter(isNearbyV);
 
     function isNearbyV(vertice) {
-        return ((vertice[0] - 0.05 < x) && (x < vertice[0] + 0.05) 
-        && (vertice[1] - 0.05 < y) && (y < vertice[1] + 0.05));
+        return ((vertice[0] - 0.05 < x) && (x < vertice[0] + 0.05)
+            && (vertice[1] - 0.05 < y) && (y < vertice[1] + 0.05));
     }
 
+    // return the vertice too?
     return (verticeNearby.length > 0);
 }
 
+const listObject = document.getElementById("listObject");
+
 const mouseMoveListener = (e) => {
-    //count mouse's coordinates
+    // count mouse's coordinates
     if (isDown) {
         // convert pixel to clip space (-1 to 1)
         let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
         let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-        //vertices per model and shapes
-        if(drawModel == "rectangle"){
-            vertices[vertices.length-1][0] = x;
-            vertices[vertices.length-1][1] = y;
-            vertices[vertices.length-2][1] = y;
-            vertices[vertices.length-3][0] = x;
-        } else if (drawModel == "line"){
-            vertices[vertices.length-1][1] = y;
-            vertices[vertices.length-1][0] = x;
-        } else if (drawModel == "square"){
-            dx = x - vertices[vertices.length-1][0];
-            dy = y - vertices[vertices.length-1][1];
-            d = Math.min(Math.abs(dx),Math.abs(dy));
-            dx > 0? dx = d : dx = -d;
-            dy > 0? dy = d : dy = -d;
-            vertices[vertices.length-3][1] = vertices[vertices.length-3][1] + dy;
-            vertices[vertices.length-2][0] = vertices[vertices.length-2][0] + dx;
-            vertices[vertices.length-2][1] = vertices[vertices.length-2][1] + dy;
-            vertices[vertices.length-1][0] = vertices[vertices.length-1][0] + dx;
-        }else{
+        // vertices per model and shapes
+        if (drawModel == "rectangle") {
+            vertices[vertices.length - 1][0] = x;
+            vertices[vertices.length - 1][1] = y;
+            vertices[vertices.length - 2][1] = y;
+            vertices[vertices.length - 3][0] = x;
+        } else if (drawModel == "line") {
+            vertices[vertices.length - 1][0] = x;
+            vertices[vertices.length - 1][1] = y;
+        } else if (drawModel == "square") {
+            dx = x - vertices[vertices.length - 4][0];
+            dy = y - vertices[vertices.length - 4][1];
+            d = Math.min(Math.abs(dx), Math.abs(dy));
+            dx > 0 ? dx = d : dx = -d;
+            dy > 0 ? dy = d : dy = -d;
+            vertices[vertices.length - 1][0] = vertices[vertices.length - 4][0] + dx;
+            vertices[vertices.length - 1][1] = vertices[vertices.length - 4][1] + dy;
+            vertices[vertices.length - 2][1] = vertices[vertices.length - 4][1] + dy;
+            vertices[vertices.length - 3][0] = vertices[vertices.length - 4][0] + dx;
+        } else if (drawModel == "polygon") {
             //POLYGON
+        }
+        else {
+
         }
     }
 }
-var colorMenu = [
-    [ 0.0, 0.0, 0.0, 1.0],  // black
-    [ 1.0, 0.0, 0.0, 1.0],  // red
-    [ 1.0, 1.0, 0.0, 1.0],  // yellow
-    [ 0.0, 1.0, 0.0, 1.0],  // green
-    [ 0.0, 0.0, 1.0, 1.0],  // blue
-    [ 1.0, 0.0, 1.0, 1.0],  // magenta
-    [ 0.0, 1.0, 1.0, 1.0]  // cyan
+
+// color settings
+var colorPicker = [
+    [0.0, 0.0, 0.0, 1.0],  // black
+    [1.0, 0.0, 0.0, 1.0],  // red
+    [1.0, 1.0, 0.0, 1.0],  // yellow
+    [0.0, 1.0, 0.0, 1.0],  // green
+    [0.0, 0.0, 1.0, 1.0],  // blue
+    [1.0, 0.0, 1.0, 1.0],  // magenta
+    [0.0, 1.0, 1.0, 1.0]   // cyan
 ];
-var color = [0.0,0.0,0.0,1.0];
-var m = document.getElementById("mymenu");
-    m.addEventListener("click", function() {
-        color = colorMenu[m.selectedIndex]
-        if(objectNum != -1 && vertexNum != -1){
-            if(currentModel[objectNum-1] == "rectangle" || currentModel[objectNum-1] == "square"){   
-                for (let i = 4*(objectNum-1); i < 4*(objectNum); i++) {
-                    if(i == (4*(objectNum-1)+Number(vertexNum))){
-                        colors[i] = color;
-                    }
-                    else {
-                        colors[i] = colors[i]
-                    }     
-                }
-            }
+var color = [0.0, 0.0, 0.0, 1.0];   // default
+var colorMenu = document.getElementById("colorMenu");
+
+// count how many vertices before object or start of object
+const countOffset = (objectNum) => {
+    let offset = 0;
+    for (let i = 0; i < objectNum - 1; i++) {
+        offset += verticesInShape[models[i]];
+    }
+    return offset;
+}
+
+colorMenu.addEventListener("click", function () {
+    let colorPicked = colorPicker[colorMenu.selectedIndex]
+    color = colorPicked;
+});
+
+var changeColor = document.getElementById("changeColor")
+changeColor.addEventListener("click", function () {
+    // if vertex selected
+    if (objectNum != -1 && vertexNum != -1) {
+        colors[countOffset(objectNum) + (vertexNum - 1)] = color;
+    }
+    // else if object selected
+    else if (objectNum != -1) {
+        for (let i = countOffset(objectNum); i < countOffset(objectNum) + verticesInShape[models[objectNum - 1]]; i++) {
+            colors[i] = color;
         }
-        else if(objectNum != -1){
-            if(currentModel[objectNum-1] == "rectangle" || currentModel[objectNum-1] == "square"){
-                for (let i = 4*(objectNum-1); i < 4*(objectNum); i++) {
-                    colors[i] = color;                    
-                }
-            }
-        }
-    });
-var a = document.getElementById("Button1")
-    a.addEventListener("click", function(){
+    }
     render();
-    });
-    
-// var b = document.getElementById("test")
-//     b.addEventListener("click", function(){
-//         console.log(currentModel)
-//         console.log(list_of_vertices)
-//         console.log(colors)
-//     });
+});
 
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-    let count = 2;
-    
 
-    if ((drawModel == "rectangle") || (drawModel == "square")){
-        count = 4;
-    } else if(drawModel = "line"){
-        count = 2;
+    if (drawModel != "") {
+        models.push(drawModel);
+        objectNum = models.length;
+
+        for (let i = 0; i < verticesInShape[drawModel]; i++) {
+            vertices.push([x, y]);
+            colors.push(color);
+        }
+
+        isDown = true;
     }
-    for (let i = 0; i < count; i++) {
-        vertices.push([x, y]);
-        colors.push(color);
-        
-    }
-    
-    isDown = true;
 })
 
 canvas.addEventListener("mouseup", (e) => {
-    if (isDown) {d
-        //vertices per model and shapes
-        if(drawModel == "rectangle"){
-            list_of_vertices.push(vertices);
-            currentModel.push("rectangle");
-        } else if (drawModel == "line"){
-            list_of_vertices.push(vertices);
-            currentModel.push("line");
-        } else if (drawModel == "square"){
-            list_of_vertices.push(vertices);
-            currentModel.push("square");
-        }else{
-            //POLYGON
+    // create list button for shape and vertex
+    if (drawModel != "") {
+        let newButtonObject = document.createElement("button");
+        let newElList = document.createElement("li");
+        let newListVertex = document.createElement("ul")
+        newButtonObject.innerText = models[models.length - 1] + " " + models.length;
+        newButtonObject.value = models.length
+
+        newButtonObject.onclick = function () {
+            objectNum = newButtonObject.value;
+            vertexNum = -1;
+            // not clicked
+            if (newButtonObject.classList.contains("btnClicked")) {
+                newButtonObject.classList.remove("btnClicked");
+                console.log("clicked");
+            } 
+            // clicked
+            else {
+                newButtonObject.classList.add("btnClicked");
+                console.log("not");
+            }
         }
+
+        newElList.appendChild(newButtonObject)
+        newElList.appendChild(newListVertex)
+
+        for (let i = 0; i < verticesInShape[drawModel]; i++) {
+            let newButtonVertex = document.createElement("button")
+            newButtonVertex.innerText = "Vertex " + (i + 1)
+            newButtonVertex.value = i + 1
+            newButtonVertex.onclick = function () {
+                objectNum = newButtonObject.value;
+                vertexNum = i + 1;
+                console.log(objectNum, vertexNum);
+            }
+            newListVertex.appendChild(newButtonVertex)
+        }
+        listObject.appendChild(newElList);
     }
-    //Create List Button for shape and vertex
-    let li = document.createElement("button");
-    let lo = document.createElement("li");
-    let ul = document.createElement("ul")
-    li.innerText = currentModel[currentModel.length-1] + " " + currentModel.length;
-    li.value = currentModel.length
-    li.onclick= function(){
-                    objectNum = li.value
-                    vertexNum = -1
-                    console.log(li.value)}
-    lo.appendChild(li)
-    lo.appendChild(ul)
-    for(let i=0; i<4;i++){
-        let la = document.createElement("button")
-        la.innerText = "Vertex " + (i+1)
-        la.value = i
-        la.onclick = function(){
-                    vertexNum=la.value
-                    objectNum = li.value
-                    console.log(vertexNum)
-                    console.log(objectNum)}
-        ul.appendChild(la)
-    }
-    list.appendChild(lo);
+
     isDown = false;
 })
 
@@ -253,7 +232,6 @@ const cBuffer = gl.createBuffer();
 
 render();
 function render() {
-    
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -271,35 +249,22 @@ function render() {
     gl.enableVertexAttribArray(vColor);
 
     // gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
-    
-    //gl tool per model
-    let vertice_count = 0;
-    
-    for(let i = 0; i < list_of_vertices.length; i+= 1){
-        if(currentModel[i] == "rectangle"){
-            vertice_count = 4;
-            gltool = gl.TRIANGLE_STRIP;
-            for (let i = 0; i < vertices.length; i+= vertice_count) {
-                gl.drawArrays(gltool, i, vertice_count);
-            }
-        
-        }else if(currentModel[i] == "line"){
-            vertice_count = 2;
-            gltool = gl.LINE_STRIP;
-            for (let i = 0; i < vertices.length; i+= vertice_count) {
-                gl.drawArrays(gltool, i, vertice_count);
-            }
-        
-        }else if (currentModel[i] == "square"){
-            vertice_count = 4;
-            gltool = gl.TRIANGLE_FAN;
-            for (let i = 0; i < vertices.length; i+= vertice_count) {
-                gl.drawArrays(gltool, i, vertice_count);
-            }
-        }else{
-            //POLYGON
+
+    // gl tool per model
+    let offsetBuffer = 0;
+    for (let i = 0; i < models.length; i++) {
+        if (models[i] == "rectangle") {
+            gl.drawArrays(gl.TRIANGLE_STRIP, offsetBuffer, verticesInShape["rectangle"]);
+            offsetBuffer += verticesInShape["rectangle"];
+        }
+        else if (models[i] == "square") {
+            gl.drawArrays(gl.TRIANGLE_STRIP, offsetBuffer, verticesInShape["square"]);
+            offsetBuffer += verticesInShape["square"];
+        }
+        else if (models[i] == "line") {
+            gl.drawArrays(gl.LINE_STRIP, offsetBuffer, verticesInShape["line"]);
+            offsetBuffer += verticesInShape["line"];
         }
     }
     window.requestAnimFrame(render);
 }
-

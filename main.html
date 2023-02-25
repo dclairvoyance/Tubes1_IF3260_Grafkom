@@ -14,7 +14,7 @@
     <div class="row">
         <div class="column left">
             <h1>Daftar Objek</h1>
-            <ul id="listObjek"></ul>
+            <ul id="listObject"></ul>
         </div>
         <div class="column middle">
             <canvas id="canvas" onmousemove="mouseMoveListener(event)" width="750px" height="750px"></canvas>
@@ -24,12 +24,14 @@
             <div class="toolbar">
                 <div class="tool">
                     <h2>New Object</h2>
-                    <button onclick="setPolygon()">Polygon</button>
-                    <button>Polygon Strips</button>
-                    <button onclick="setLine()">Line</button>
-                    <button onclick="setSquare()">Square</button>
-                    <button onclick="setRectangle()">Rectangle</button>
-                    <button onClick="choose()">Cursor</button>
+                    <div class="button-group">
+                        <button onclick="setPolygon()">Polygon</button>
+                        <button>Polygon Strips</button>
+                        <button onclick="setLine()">Line</button>
+                        <button onclick="setSquare()">Square</button>
+                        <button onclick="setRectangle()">Rectangle</button>
+                        <button onClick="choose()">Cursor</button>
+                    </div>
                 </div>
                 <div class="tool">
                     <h2>Properties</h2>
@@ -44,23 +46,21 @@
                             </div>
                         </div>
                         <div>
-                            <select id="mymenu" class="mymenu" size="7">
-                                <option class="mymenu" value="0">Black</option>
-                                <option class="mymenu" value="1">Red</option>
-                                <option class="mymenu" value="2">Yellow</option>
-                                <option class="mymenu" value="3">Green</option>
-                                <option class="mymenu" value="4">Blue</option>
-                                <option class="mymenu" value="5">Magenta</option>
-                                <option class="mymenu" value="6">Cyan</option>
+                            <select id="colorMenu" class="colorMenu" size="7">
+                                <option selected class="colorMenu" value="0">Black</option>
+                                <option class="colorMenu" value="1">Red</option>
+                                <option class="colorMenu" value="2">Yellow</option>
+                                <option class="colorMenu" value="3">Green</option>
+                                <option class="colorMenu" value="4">Blue</option>
+                                <option class="colorMenu" value="5">Magenta</option>
+                                <option class="colorMenu" value="6">Cyan</option>
                             </select>
-                            <button id="Button1">Change Color</button>
-                            <button id="test">Log</button>
+                            <button id="changeColor">Change Color</button>
                         </div>
                 </div>
                 <div class="tool">
                     <h2>Utilities</h2>
-                        
-                        
+                    <p class="log"></p>
                 </div>
             </div>
         </div>
