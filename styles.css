@@ -28,6 +28,9 @@
     transform: translateY(3.5%);
     background-color: white;
     display: inline;
+    width: 93%;
+    overflow: hidden;
+    overflow-x: scroll;
 }
 
 .right {
@@ -58,7 +61,7 @@ h2 {
     margin-bottom: 10px;
 }
 
-.colorMenu{
+.colorMenu {
     box-sizing: border-box;
     font-family: "Lato", sans-serif;
     padding: 0;
@@ -68,4 +71,11 @@ h2 {
 
 .btnClicked {
     border: 1.5px solid white;
+}
+
+#listObject {
+    margin-top: 10%;
+    height: 90%;
+    overflow: hidden; 
+    overflow-y: scroll;
 }

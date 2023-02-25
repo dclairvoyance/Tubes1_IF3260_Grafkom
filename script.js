@@ -5,6 +5,7 @@ varying vec4 fColor;
 
 void main() {
     gl_Position = vPosition;
+    gl_PointSize = 8.0;
     fColor = vColor;
 }`;
 
@@ -19,7 +20,7 @@ void main() {
 // canvas setup
 const canvas = document.getElementById('canvas');
 const gl = setupWebGL(canvas);
-const offset = (3.5 / 100) * window.innerHeight;    // corrections for css
+const offsetCorr = (3.5 / 100) * window.innerHeight;    // corrections for css
 
 let vertices = [];  // list of [x, y] where -1 < x, y < 1
 let colors = [];    // list of [r, g, b, a] where 0 < r, g, b, a < 1
@@ -33,6 +34,7 @@ let drawModel = ""; // current model
 let dx = 0;
 let dy = 0;
 let d = 0;
+let verticesCount = 0;
 
 const verticesInShape = {
     rectangle: 4, 
@@ -43,8 +45,22 @@ const verticesInShape = {
 let objectNum = -1;
 let vertexNum = -1;
 
+const polygonBtn = document.getElementById("polygonBtn");
+let isFirstVertex = true;
+let isLastVertex = true;
+let polygonsVertices = [];
+let countPolygonVertices = 0;
+
 const setPolygon = () => {
-    drawModel = "polygon"
+    // clicked
+    if (polygonBtn.classList.contains("btnClicked")) {
+        polygonBtn.classList.remove("btnClicked");
+    } 
+    // not clicked
+    else {
+        polygonBtn.classList.add("btnClicked");
+        drawModel = "polygon"
+    }
 }
 
 const setLine = () => {
@@ -65,9 +81,8 @@ const choose = () => {
 }
 
 const isNearby = (e) => {
-    let nearby = false;
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-    let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
+    let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
     let verticeNearby = vertices.filter(isNearbyV);
 
     function isNearbyV(vertice) {
@@ -75,8 +90,15 @@ const isNearby = (e) => {
             && (vertice[1] - 0.05 < y) && (y < vertice[1] + 0.05));
     }
 
-    // return the vertice too?
-    return (verticeNearby.length > 0);
+    return (verticeNearby.length > 0), verticeNearby;
+    // verticeNarby is a list of nearby vertices
+}
+
+const isNearbyVertice = (e, vertice) => {
+    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
+    return ((vertice[0] - 0.05 < x) && (x < vertice[0] + 0.05)
+        && (vertice[1] - 0.05 < y) && (y < vertice[1] + 0.05));
 }
 
 const listObject = document.getElementById("listObject");
@@ -86,7 +108,7 @@ const mouseMoveListener = (e) => {
     if (isDown) {
         // convert pixel to clip space (-1 to 1)
         let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-        let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
+        let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
         // vertices per model and shapes
         if (drawModel == "rectangle") {
             vertices[vertices.length - 1][0] = x;
@@ -107,7 +129,8 @@ const mouseMoveListener = (e) => {
             vertices[vertices.length - 2][1] = vertices[vertices.length - 4][1] + dy;
             vertices[vertices.length - 3][0] = vertices[vertices.length - 4][0] + dx;
         } else if (drawModel == "polygon") {
-            //POLYGON
+            vertices[vertices.length - 1][0] = x;
+            vertices[vertices.length - 1][1] = y;
         }
         else {
 
@@ -131,10 +154,19 @@ var colorMenu = document.getElementById("colorMenu");
 // count how many vertices before object or start of object
 const countOffset = (objectNum) => {
     let offset = 0;
-    for (let i = 0; i < objectNum - 1; i++) {
-        offset += verticesInShape[models[i]];
+    let countPolygon = 0;
+    for (let i = 0; i < objectNum; i++) {
+        if (models[i] == "polygon") {
+            verticesCount = polygonsVertices[countPolygon];
+            countPolygon++;
+        }
+        else {
+            verticesCount = verticesInShape[models[i]];
+        }
+        offset += verticesCount;
     }
-    return offset;
+    offset -= verticesCount;
+    return {offset, verticesCount};
 }
 
 colorMenu.addEventListener("click", function () {
@@ -144,13 +176,15 @@ colorMenu.addEventListener("click", function () {
 
 var changeColor = document.getElementById("changeColor")
 changeColor.addEventListener("click", function () {
+    let {offset, verticesCount} = countOffset(objectNum);
+    console.log(offset, verticesCount);
     // if vertex selected
     if (objectNum != -1 && vertexNum != -1) {
-        colors[countOffset(objectNum) + (vertexNum - 1)] = color;
+        colors[offset + (vertexNum - 1)] = color;
     }
     // else if object selected
     else if (objectNum != -1) {
-        for (let i = countOffset(objectNum); i < countOffset(objectNum) + verticesInShape[models[objectNum - 1]]; i++) {
+        for (let i = offset; i < offset + verticesCount; i++) {
             colors[i] = color;
         }
     }
@@ -160,9 +194,40 @@ changeColor.addEventListener("click", function () {
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-    let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
+    let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
 
-    if (drawModel != "") {
+    vertexNum = -1;
+
+    if (drawModel == "polygon") {
+        // if first vertex
+        if (isFirstVertex) {
+            models.push(drawModel);
+            isFirstVertex = false;
+            isLastVertex = false;
+            vertices.push([x, y]);
+            colors.push(color);
+            countPolygonVertices = 1;
+            polygonsVertices.push(countPolygonVertices);
+            objectNum = models.length;
+        } 
+        // else if new vertex is nearby the first vertex or last vertex
+        else if (isNearbyVertice(e, vertices[vertices.length - countPolygonVertices])) {
+            isFirstVertex = true;
+            isLastVertex = true;
+            polygonsVertices.pop();
+            polygonsVertices.push(countPolygonVertices);
+        }
+        // other vertices
+        else {
+            vertices.push([x, y]);
+            colors.push(color);
+            polygonsVertices.pop();
+            countPolygonVertices++;
+            polygonsVertices.push(countPolygonVertices);
+        }
+
+        isDown = true;
+    } else if (drawModel != "") {
         models.push(drawModel);
         objectNum = models.length;
 
@@ -177,7 +242,7 @@ canvas.addEventListener('mousedown', (e) => {
 
 canvas.addEventListener("mouseup", (e) => {
     // create list button for shape and vertex
-    if (drawModel != "") {
+    if (drawModel != "" && isLastVertex) {
         let newButtonObject = document.createElement("button");
         let newElList = document.createElement("li");
         let newListVertex = document.createElement("ul")
@@ -187,29 +252,28 @@ canvas.addEventListener("mouseup", (e) => {
         newButtonObject.onclick = function () {
             objectNum = newButtonObject.value;
             vertexNum = -1;
-            // not clicked
+            // clicked
             if (newButtonObject.classList.contains("btnClicked")) {
                 newButtonObject.classList.remove("btnClicked");
-                console.log("clicked");
             } 
-            // clicked
+            // not clicked
             else {
                 newButtonObject.classList.add("btnClicked");
-                console.log("not");
             }
         }
 
         newElList.appendChild(newButtonObject)
         newElList.appendChild(newListVertex)
 
-        for (let i = 0; i < verticesInShape[drawModel]; i++) {
+        drawModel == "polygon" ? verticesCount = countPolygonVertices : verticesCount = verticesInShape[drawModel];
+
+        for (let i = 0; i < verticesCount; i++) {
             let newButtonVertex = document.createElement("button")
             newButtonVertex.innerText = "Vertex " + (i + 1)
             newButtonVertex.value = i + 1
             newButtonVertex.onclick = function () {
                 objectNum = newButtonObject.value;
                 vertexNum = i + 1;
-                console.log(objectNum, vertexNum);
             }
             newListVertex.appendChild(newButtonVertex)
         }
@@ -248,22 +312,30 @@ function render() {
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
-    // gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
-
     // gl tool per model
     let offsetBuffer = 0;
+    let polygonCount = 0;
     for (let i = 0; i < models.length; i++) {
         if (models[i] == "rectangle") {
+            gl.drawArrays(gl.POINTS, offsetBuffer, verticesInShape["rectangle"]);
             gl.drawArrays(gl.TRIANGLE_STRIP, offsetBuffer, verticesInShape["rectangle"]);
             offsetBuffer += verticesInShape["rectangle"];
         }
         else if (models[i] == "square") {
+            gl.drawArrays(gl.POINTS, offsetBuffer, verticesInShape["square"]);
             gl.drawArrays(gl.TRIANGLE_STRIP, offsetBuffer, verticesInShape["square"]);
             offsetBuffer += verticesInShape["square"];
         }
         else if (models[i] == "line") {
+            gl.drawArrays(gl.POINTS, offsetBuffer, verticesInShape["line"]);
             gl.drawArrays(gl.LINE_STRIP, offsetBuffer, verticesInShape["line"]);
             offsetBuffer += verticesInShape["line"];
+        }
+        else if (models[i] == "polygon") {
+            gl.drawArrays(gl.POINTS, offsetBuffer, polygonsVertices[polygonCount]);
+            gl.drawArrays(gl.TRIANGLE_FAN, offsetBuffer, polygonsVertices[polygonCount]);
+            offsetBuffer += polygonsVertices[polygonCount];
+            polygonCount++;
         }
     }
     window.requestAnimFrame(render);
