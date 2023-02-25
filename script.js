@@ -262,7 +262,7 @@ changeColor.addEventListener("click", function () {
     render();
 });
 
-//Moving vertex
+// moving vertex
 var sliderX = document.getElementById("X")
 var sliderY = document.getElementById("Y")
 // sliderX.oninput = function (){

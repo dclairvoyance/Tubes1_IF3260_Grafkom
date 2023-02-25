@@ -17,14 +17,14 @@ const isNearby = (e) => {
 }
 
 const objectIdx = (idxVertices,idx) => {
-    objectNum=-1
-    vertexNum=-1
+    objectNum = -1
+    vertexNum = -1
     objectFirstNum = -1
-    for( i=0;i<idxVertices.length;i++){
-        if(idxVertices[i]<=idx){
-            objectNum=i
-            vertexNum=idx-idxVertices[i]
-            objectFirstNum=idxVertices[i]
+    for( i = 0;i < idxVertices.length; i++){
+        if(idxVertices[i] <= idx){
+            objectNum = i
+            vertexNum = idx - idxVertices[i]
+            objectFirstNum = idxVertices[i]
         }
     }
     return {
@@ -33,7 +33,6 @@ const objectIdx = (idxVertices,idx) => {
         objectFirstNum
     };
 }
-
 
 const euclideanDistance = (coor1, coor2) => {
     return Math.sqrt(
