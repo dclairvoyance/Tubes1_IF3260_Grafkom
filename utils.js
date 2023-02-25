@@ -1,5 +1,3 @@
-
-
 const objectNearby= (vertices,verticeNearby) =>{
     return vertices.findIndex((e) => {
         return e[0] == verticeNearby[0] && e[1] == verticeNearby[1]
@@ -8,7 +6,7 @@ const objectNearby= (vertices,verticeNearby) =>{
 
 const isNearby = (e) => {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-    let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
+    let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
     let verticeNearby = vertices.filter(isNearbyV);
     function isNearbyV(vertice) {
         return euclideanDistance(vertice,[x,y])<0.05;

@@ -81,20 +81,6 @@ const choose = () => {
 
 }
 
-const isNearby = (e) => {
-    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-    let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
-    let verticeNearby = vertices.filter(isNearbyV);
-
-    function isNearbyV(vertice) {
-        return ((vertice[0] - 0.05 < x) && (x < vertice[0] + 0.05)
-            && (vertice[1] - 0.05 < y) && (y < vertice[1] + 0.05));
-    }
-
-    return (verticeNearby.length > 0), verticeNearby;
-    // verticeNarby is a list of nearby vertices
-}
-
 const isNearbyVertice = (e, vertice) => {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
