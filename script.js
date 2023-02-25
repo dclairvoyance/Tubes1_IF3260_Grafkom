@@ -30,6 +30,7 @@ let cursor = false;
 
 let models = [];    // list of model
 let drawModel = ""; // current model
+let idxVertices=[];
 let dx = 0;
 let dy = 0;
 let d = 0;
@@ -60,24 +61,11 @@ const setRectangle = () => {
 }
 
 const choose = () => {
-    cursor = true
+    drawModel=""
 
 }
 
-const isNearby = (e) => {
-    let nearby = false;
-    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-    let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-    let verticeNearby = vertices.filter(isNearbyV);
 
-    function isNearbyV(vertice) {
-        return ((vertice[0] - 0.05 < x) && (x < vertice[0] + 0.05)
-            && (vertice[1] - 0.05 < y) && (y < vertice[1] + 0.05));
-    }
-
-    // return the vertice too?
-    return (verticeNearby.length > 0);
-}
 
 const listObject = document.getElementById("listObject");
 
@@ -157,13 +145,27 @@ changeColor.addEventListener("click", function () {
     render();
 });
 
+//Moving vertex
+var sliderX = document.getElementById("X")
+var sliderY = document.getElementById("Y")
+// sliderX.oninput = function (){
+//     if()
+// }
+
 canvas.addEventListener('mousedown', (e) => {
     // convert pixel to (-1 to 1)
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
-
+    let verticeNearby = isNearby(e)
+    if(verticeNearby.length>0){
+        idx = objectNearby(vertices,verticeNearby[0])
+        objectNum,vertexNum = objectIdx(idxVertices,idx)
+        console.log(objectNum)
+        console.log(vertexNum)
+    }
     if (drawModel != "") {
         models.push(drawModel);
+        idxVertices.push(vertices.length)
         objectNum = models.length;
 
         for (let i = 0; i < verticesInShape[drawModel]; i++) {
@@ -209,7 +211,7 @@ canvas.addEventListener("mouseup", (e) => {
             newButtonVertex.onclick = function () {
                 objectNum = newButtonObject.value;
                 vertexNum = i + 1;
-                console.log(objectNum, vertexNum);
+                // console.log(objectNum, vertexNum);
             }
             newListVertex.appendChild(newButtonVertex)
         }

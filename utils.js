@@ -1,22 +1,37 @@
 
 
+const objectNearby= (vertices,verticeNearby) =>{
+    return vertices.findIndex((e) => {
+        return e[0] == verticeNearby[0] && e[1] == verticeNearby[1]
+    })
+}
 
+const isNearby = (e) => {
+    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    let y = 1 - (2 * (e.clientY - offset - canvas.offsetTop)) / canvas.clientHeight;
+    let verticeNearby = vertices.filter(isNearbyV);
+    function isNearbyV(vertice) {
+        return euclideanDistance(vertice,[x,y])<0.05;
+    }
 
+    // return the vertice too?
+    return verticeNearby;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const objectIdx = (idxVertices,idx) => {
+    objectNum=-1
+    vertexNum=-1
+    for( i=0;i<idxVertices.length;i++){
+        if(idxVertices[i]<=idx){
+            objectNum=i+1
+            vertexNum=idx-idxVertices[i]+1
+        }
+    }
+    return {
+        objectNum,
+        vertexNum
+    };
+}
 
 
 const euclideanDistance = (coor1, coor2) => {
