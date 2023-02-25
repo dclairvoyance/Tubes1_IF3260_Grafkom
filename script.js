@@ -27,7 +27,7 @@ let colors = [];    // list of [r, g, b, a] where 0 < r, g, b, a < 1
 
 // state
 let isDown = false; // true when mouse is clicked
-let cursor = false;
+let cursor = false; // delete?
 let isDrag = false;
 
 let models = [];    // list of model
@@ -302,6 +302,7 @@ canvas.addEventListener('mousedown', (e) => {
             isLastVertex = true;
             polygonsVertices.pop();
             polygonsVertices.push(countPolygonVertices);
+            polygonBtn.classList.remove("btnClicked");
         }
         // other vertices
         else {
@@ -365,6 +366,7 @@ canvas.addEventListener("mouseup", (e) => {
             newListVertex.appendChild(newButtonVertex)
         }
         listObject.appendChild(newElList);
+        drawModel = "";
     }
     isDrag = false
     isDown = false;
