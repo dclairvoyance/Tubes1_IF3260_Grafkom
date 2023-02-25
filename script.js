@@ -27,7 +27,7 @@ let colors = [];    // list of [r, g, b, a] where 0 < r, g, b, a < 1
 
 // state
 let isDown = false; // true when mouse is clicked
-let cursor = false; // delete?
+let cursor = false; // true when button cursor pressed. Used for vertex drag
 let isDrag = false;
 
 let models = [];    // list of model
@@ -248,7 +248,6 @@ colorMenu.addEventListener("click", function () {
 var changeColor = document.getElementById("changeColor")
 changeColor.addEventListener("click", function () {
     let {offset, verticesCount} = countOffset(objectNum);
-    console.log(offset, verticesCount);
     // if vertex selected
     if (objectNum != -1 && vertexNum != -1) {
         colors[offset + (vertexNum - 1)] = color;
@@ -287,6 +286,7 @@ canvas.addEventListener('mousedown', (e) => {
     if (drawModel == "polygon") {
         // if first vertex
         if (isFirstVertex) {
+            idxVertices.push(vertices.length)
             models.push(drawModel);
             isFirstVertex = false;
             isLastVertex = false;
