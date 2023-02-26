@@ -390,6 +390,19 @@ document.getElementById("save").addEventListener("click", function (e) {
     downloadAllShapes(savedShape, fileName, "text/plain");
 });
 
+function downloadAllShapes(data, filename, type) {
+    var file = new Blob([JSON.stringify(data)], {type: type});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(file);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  
+    }, 0); 
+}
+
 //download all shapes in json format
 
 
