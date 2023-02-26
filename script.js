@@ -72,6 +72,7 @@ let polygonsVertices = [];
 let countPolygonVertices = 0;
 
 const setPolygon = () => {
+    cursor=false;
     // clicked
     if (polygonBtn.classList.contains("btnClicked")) {
         polygonBtn.classList.remove("btnClicked");
@@ -85,6 +86,7 @@ const setPolygon = () => {
 }
 
 const setLine = () => {
+    cursor=false;
     if (isDraw && drawModel != "polygon") {
         drawModel = "line";
         lockX = false;
@@ -94,6 +96,7 @@ const setLine = () => {
 }
 
 const setSquare = () => {
+    cursor=false;
     if (isDraw && drawModel != "polygon") {
         drawModel = "square";
         lockX = false;
@@ -103,6 +106,7 @@ const setSquare = () => {
 }
 
 const setRectangle = () => {
+    cursor=false;
     if (isDraw && drawModel != "polygon") {
         drawModel = "rectangle";
         lockX = false;
@@ -113,6 +117,7 @@ const setRectangle = () => {
 
 const choose = () => {
     drawModel = "";
+    cursor=true;
     lockX=false;
     lockY=false;
 }
@@ -155,6 +160,7 @@ const delVertex = () => {
 
 const moveBtn = document.getElementById("moveBtn");
 const move = () => {
+    cursor=false
     // clicked
     if (moveBtn.classList.contains("btnClicked")) {
         moveBtn.classList.remove("btnClicked");
@@ -180,6 +186,7 @@ const move = () => {
 
 const scaleBtn = document.getElementById("scaleBtn");
 const scale = () => {
+    cursor = false
     // clicked
     if (scaleBtn.classList.contains("btnClicked")) {
         scaleBtn.classList.remove("btnClicked");
@@ -422,7 +429,7 @@ canvas.addEventListener('mousedown', (e) => {
 
     
     let verticeNearby = isNearby(e)
-    if (verticeNearby.length > 0){
+    if (verticeNearby.length > 0 && cursor){
         idx = objectNearby(vertices,verticeNearby[0]);
         objectNum,vertexNum,objectFirstNum = objectIdx(idxVertices,idx);
         isDrag = true
