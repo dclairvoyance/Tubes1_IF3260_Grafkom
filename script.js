@@ -71,7 +71,14 @@ let polygonsVertices = [];
 let countPolygonVertices = 0;
 
 const setPolygon = () => {
-    cursor=false;
+    cursor = false;
+    if (isScale || isMove) {
+        scaleBtn.classList.remove("btnClicked");
+        moveBtn.classList.remove("btnClicked");
+        isScale = false;
+        isMove = false;
+        isDraw = true;
+    }
     // clicked
     if (polygonBtn.classList.contains("btnClicked")) {
         polygonBtn.classList.remove("btnClicked");
@@ -87,7 +94,14 @@ const setPolygon = () => {
 }
 
 const setLine = () => {
-    cursor=false;
+    cursor = false;
+    if (isScale || isMove) {
+        scaleBtn.classList.remove("btnClicked");
+        moveBtn.classList.remove("btnClicked");
+        isScale = false;
+        isMove = false;
+        isDraw = true;
+    }
     if (isDraw && drawModel != "polygon") {
         drawModel = "line";
         lockX = false;
@@ -97,7 +111,14 @@ const setLine = () => {
 }
 
 const setSquare = () => {
-    cursor=false;
+    cursor = false;
+    if (isScale || isMove) {
+        scaleBtn.classList.remove("btnClicked");
+        moveBtn.classList.remove("btnClicked");
+        isScale = false;
+        isMove = false;
+        isDraw = true;
+    }
     if (isDraw && drawModel != "polygon") {
         drawModel = "square";
         lockX = false;
@@ -107,7 +128,14 @@ const setSquare = () => {
 }
 
 const setRectangle = () => {
-    cursor=false;
+    cursor = false;
+    if (isScale || isMove) {
+        scaleBtn.classList.remove("btnClicked");
+        moveBtn.classList.remove("btnClicked");
+        isScale = false;
+        isMove = false;
+        isDraw = true;
+    }
     if (isDraw && drawModel != "polygon") {
         drawModel = "rectangle";
         lockX = false;
