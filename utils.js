@@ -4,23 +4,33 @@ const objectNearby= (vertices,verticeNearby) =>{
     })
 }
 
+// get list of vertices nearby in radius of 0.05
 const isNearby = (e) => {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
-    let verticeNearby = vertices.filter(isNearbyV);
-    function isNearbyV(vertice) {
-        return euclideanDistance(vertice,[x,y])<0.05;
-    }
-
-    // return the vertice too?
+    let distanceVerticeNearby = vertices.map(function (vertice) {
+        return euclideanDistance(vertice, [x, y]);
+    })
+    distanceVerticeNearby.sort(function (a, b) {
+        return a - b;
+    })
+    let verticeNearby = distanceVerticeNearby.filter(function (distance) {
+        return distance < 0.05;
+    })
     return verticeNearby;
+}
+
+const isNearbyVertice = (e, vertice) => {
+    let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
+    return euclideanDistance(vertice,[x,y]) < 0.05;
 }
 
 const objectIdx = (idxVertices,idx) => {
     objectNum = -1
     vertexNum = -1
     objectFirstNum = -1
-    for( i = 0;i < idxVertices.length; i++){
+    for( i = 0; i < idxVertices.length; i++){
         if(idxVertices[i] <= idx){
             objectNum = i
             vertexNum = idx - idxVertices[i]
