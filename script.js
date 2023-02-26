@@ -48,6 +48,8 @@ let verticesCount = 0;
 let verticesSquare = [[9, -9], [-9, -9], [9, 9], [-9, 9]];
 let quadrant = 0;
 
+let lockX = false;
+let lockY = false;
 const verticesInShape = {
     rectangle: 4, 
     square: 4, 
@@ -85,6 +87,8 @@ const setPolygon = () => {
 const setLine = () => {
     if (isDraw && drawModel != "polygon") {
         drawModel = "line";
+        lockX = false;
+        lockY = false;
         log.innerHTML = "Preparing to draw line.";
     }
 }
@@ -92,6 +96,8 @@ const setLine = () => {
 const setSquare = () => {
     if (isDraw && drawModel != "polygon") {
         drawModel = "square";
+        lockX = false;
+        lockY = false;
         log.innerHTML = "Preparing to draw square.";
     }
 }
@@ -99,12 +105,24 @@ const setSquare = () => {
 const setRectangle = () => {
     if (isDraw && drawModel != "polygon") {
         drawModel = "rectangle";
+        lockX = false;
+        lockY = false;
         log.innerHTML = "Preparing to draw rectangle.";
     }
 }
 
 const choose = () => {
-    drawModel=""
+    drawModel = "";
+    lockX=false;
+    lockY=false;
+}
+
+const lockXaxis = () => {
+    lockX = true;
+}
+
+const lockYaxis = () => {
+    lockY = true;
 }
 
 const addVertexBtn = document.getElementById("addVertexBtn");
@@ -131,7 +149,6 @@ const addVertex = () => {
 
 const delVertexBtn = document.getElementById("delVertexBtn");
 const delVertex = () => {
-
 }
 
 const moveBtn = document.getElementById("moveBtn");
@@ -196,23 +213,23 @@ const mouseMoveListener = (e) => {
     if (isDrag) {
         dragModel = models[objectNum]
         if (dragModel == "rectangle") {
-            vertices[idx][0] = x;
-            vertices[idx][1] = y;
+            if(!lockX)vertices[idx][0] = x;
+            if(!lockY)vertices[idx][1] = y;
             if(vertexNum==3){
-                vertices[idx-1][1] = y;
-                vertices[idx-2][0] = x;
+                if(!lockY)vertices[idx-1][1] = y;
+                if(!lockX)vertices[idx-2][0] = x;
             }
             else if(vertexNum==2){
-                vertices[idx+1][1] = y;
-                vertices[idx-2][0] = x;
+                if(!lockY)vertices[idx+1][1] = y;
+                if(!lockX)vertices[idx-2][0] = x;
             }
             else if(vertexNum==1){
-                vertices[idx-1][1] = y;
-                vertices[idx+2][0] = x;
+                if(!lockY)vertices[idx-1][1] = y;
+                if(!lockX)vertices[idx+2][0] = x;
             }
             else if(vertexNum==0){
-                vertices[idx+1][1] = y;
-                vertices[idx+2][0] = x;
+                if(!lockY)vertices[idx+1][1] = y;
+                if(!lockX)vertices[idx+2][0] = x;
             }
                 
         } else if (dragModel == "line") {
@@ -340,6 +357,7 @@ const mouseMoveListener = (e) => {
 // color settings
 var colorPicker = [
     [0.0, 0.0, 0.0, 1.0],  // black
+    [1.0, 1.0, 1.0, 1.0],  // white
     [1.0, 0.0, 0.0, 1.0],  // red
     [1.0, 1.0, 0.0, 1.0],  // yellow
     [0.0, 1.0, 0.0, 1.0],  // green
@@ -584,6 +602,53 @@ canvas.addEventListener("mouseup", (e) => {
     verticesSquare = [[9, -9], [-9, -9], [-9, 9], [9, 9]];
     isAddVertex = false;
 })
+
+// save all configuration in one array
+document.getElementById("save").addEventListener("click", function (e) {
+    let fileName = document.getElementById('filename').value;
+    savedShape = []
+    savedShape.push(models);
+    savedShape.push(vertices);
+    savedShape.push(colors);
+    savedShape.push(polygonsVertices);
+    if (fileName == "") {
+      fileName = "untitledCanvas";
+    }
+    if (fileName.slice(fileName.length-5) != ".json") {
+      fileName = fileName + ".json";
+    }
+    downloadAllShapes(savedShape, fileName, "text/plain");
+});
+
+//download all shapes in json format
+function downloadAllShapes(data, filename, type) {
+    var file = new Blob([JSON.stringify(data)], {type: type});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(file);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  
+    }, 0); 
+}
+
+//load all configuration in array
+document.getElementById("load").addEventListener("change", function (e){
+    let newReader = new FileReader();
+    newReader.readAsText(e.target.files[0]);
+    newReader.onload = function (e){
+        let data = JSON.parse(e.target.result);
+        models = data[0];
+        vertices = data[1];
+        colors = data[2];
+        polygonsVertices = data[3];
+        
+    }
+    render()
+});
+
 
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.8, 0.8, 0.8, 1.0);

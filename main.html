@@ -46,15 +46,21 @@
                             </div>
                         </div>
                         <div>
+                            <h3>Rectangle</h3>
+                            <button onClick="lockYaxis()">Lock Y Axis</button>
+                            <button onClick="lockXaxis()">Lock X AXis</button>
+                        </div>
+                        <div>
                             <h3>Color</h3>
-                            <select id="colorMenu" class="colorMenu" size="7">
+                            <select id="colorMenu" class="colorMenu" size="8">
                                 <option selected class="colorMenu" value="0">Black</option>
-                                <option class="colorMenu" value="1">Red</option>
-                                <option class="colorMenu" value="2">Yellow</option>
-                                <option class="colorMenu" value="3">Green</option>
-                                <option class="colorMenu" value="4">Blue</option>
-                                <option class="colorMenu" value="5">Magenta</option>
-                                <option class="colorMenu" value="6">Cyan</option>
+                                <option class="colorMenu" value="1">White</option>
+                                <option class="colorMenu" value="2">Red</option>
+                                <option class="colorMenu" value="3">Yellow</option>
+                                <option class="colorMenu" value="4">Green</option>
+                                <option class="colorMenu" value="5">Blue</option>
+                                <option class="colorMenu" value="6">Magenta</option>
+                                <option class="colorMenu" value="7">Cyan</option>
                             </select>
                             <button id="changeColor">Change Color</button>
                         </div>
@@ -75,6 +81,11 @@
                         <p id="log"></p>
                         <h3>Current focus:</h3>
                         <p id="current"></p>
+                    </div>
+                    <div class="button-saveload">
+                        <input type="text" id="filename" placeholder="Create New Title">
+                        <button id="save">Save</button>
+                        <input type="file" id="load" accept=".json,application/json">
                     </div>
                 </div>
             </div>
