@@ -38,6 +38,8 @@ let dx = 0;
 let dy = 0;
 let d = 0;
 let verticesCount = 0;
+let perShape = [] //save and load utilities
+let allShapes = []
 
 const verticesInShape = {
     rectangle: 4, 
@@ -371,6 +373,19 @@ canvas.addEventListener("mouseup", (e) => {
     isDrag = false
     isDown = false;
 })
+
+// save all configuration in one class
+document.getElementById("save").addEventListener("click", function (e) {
+    let fileName = document.getElementById('filename').value;
+    if (fileName == "") {
+      fileName = "untitledCanvas";
+    }
+    if (fileName.slice(fileName.length-5) != ".json") {
+      fileName = fileName + ".json";
+    }
+    download(vertices, fileName, "text/plain");
+});
+
 
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.8, 0.8, 0.8, 1.0);
