@@ -71,6 +71,7 @@ let polygonsVertices = [];
 let countPolygonVertices = 0;
 
 const setPolygon = () => {
+    cursor=false;
     // clicked
     if (polygonBtn.classList.contains("btnClicked")) {
         polygonBtn.classList.remove("btnClicked");
@@ -86,6 +87,7 @@ const setPolygon = () => {
 }
 
 const setLine = () => {
+    cursor=false;
     if (isDraw && drawModel != "polygon") {
         drawModel = "line";
         lockX = false;
@@ -95,6 +97,7 @@ const setLine = () => {
 }
 
 const setSquare = () => {
+    cursor=false;
     if (isDraw && drawModel != "polygon") {
         drawModel = "square";
         lockX = false;
@@ -104,6 +107,7 @@ const setSquare = () => {
 }
 
 const setRectangle = () => {
+    cursor=false;
     if (isDraw && drawModel != "polygon") {
         drawModel = "rectangle";
         lockX = false;
@@ -114,16 +118,19 @@ const setRectangle = () => {
 
 const choose = () => {
     drawModel = "";
+    cursor = true;
     lockX = false;
     lockY = false;
 }
 
 const lockXaxis = () => {
     lockX = true;
+    lockY=false;
 }
 
 const lockYaxis = () => {
     lockY = true;
+    lockX=false;
 }
 
 const addVertexBtn = document.getElementById("addVertexBtn");
@@ -184,6 +191,7 @@ const delVertex = () => {
 
 const moveBtn = document.getElementById("moveBtn");
 const move = () => {
+    cursor=false
     // clicked
     if (moveBtn.classList.contains("btnClicked")) {
         moveBtn.classList.remove("btnClicked");
@@ -213,6 +221,7 @@ const move = () => {
 
 const scaleBtn = document.getElementById("scaleBtn");
 const scale = () => {
+    cursor = false
     // clicked
     if (scaleBtn.classList.contains("btnClicked")) {
         scaleBtn.classList.remove("btnClicked");
@@ -246,7 +255,7 @@ const mouseMoveListener = (e) => {
     // convert pixel to clip space (-1 to 1)
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
-
+    
     // if drag vertex
     if (isDrag) {
         dragModel = models[objectNum]
@@ -323,6 +332,7 @@ const mouseMoveListener = (e) => {
 
         }
     }
+    
     // if move object
     if (isMove && contact.length > 0) {
         let {offset, verticesCount, } = countOffset(objectNum);
@@ -455,12 +465,13 @@ canvas.addEventListener('mousedown', (e) => {
 
     vertexNum = -1;
 
-    let verticeNearby = isNearby(e);
-    if (verticeNearby.length > 0){
+    let verticeNearby = isNearby(e)
+    if (verticeNearby.length > 0 && cursor){
         idx = objectNearby(vertices,verticeNearby[0]);
         objectNum,vertexNum,objectFirstNum = objectIdx(idxVertices,idx);
         isDrag = true
     }
+    
     // if add vertex
     if (isAddVertex) {
         let {offset, verticesCount, countPolygon} = countOffset(objectNum);
