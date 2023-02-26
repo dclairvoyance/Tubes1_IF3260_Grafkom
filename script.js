@@ -38,8 +38,6 @@ let dx = 0;
 let dy = 0;
 let d = 0;
 let verticesCount = 0;
-let perShape = [] //save and load utilities
-let allShapes = []
 
 const verticesInShape = {
     rectangle: 4, 
@@ -56,6 +54,7 @@ let isFirstVertex = true;
 let isLastVertex = true;
 let polygonsVertices = [];
 let countPolygonVertices = 0;
+let savedShape = [];
 
 const setPolygon = () => {
     // clicked
@@ -374,18 +373,32 @@ canvas.addEventListener("mouseup", (e) => {
     isDown = false;
 })
 
-// save all configuration in one class
+// save all configuration in one array
 document.getElementById("save").addEventListener("click", function (e) {
     let fileName = document.getElementById('filename').value;
+    savedShape = []
+    savedShape.push(models);
+    savedShape.push(vertices);
+    savedShape.push(colors);
+    savedShape.push(polygonsVertices);
     if (fileName == "") {
       fileName = "untitledCanvas";
     }
     if (fileName.slice(fileName.length-5) != ".json") {
       fileName = fileName + ".json";
     }
-    download(vertices, fileName, "text/plain");
+    downloadAllShapes(savedShape, fileName, "text/plain");
 });
 
+//download all shapes in json format
+function downloadAllShapes(data, filename, type) {
+    var file = new Blob([JSON.stringify(data)], {type: type});
+    const a = document.createElement("a")
+    a.href = URL.createObjectURL(file);
+    a.download(filename)
+    document.body.appendChild(link)
+    a.click()
+}  
 
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.8, 0.8, 0.8, 1.0);
