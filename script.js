@@ -38,7 +38,8 @@ let dx = 0;
 let dy = 0;
 let d = 0;
 let verticesCount = 0;
-
+let lockX= false;
+let lockY= false;
 const verticesInShape = {
     rectangle: 4, 
     square: 4, 
@@ -69,19 +70,33 @@ const setPolygon = () => {
 
 const setLine = () => {
     drawModel = "line"
+    lockX=false;
+    lockY=false;
 }
 
 const setSquare = () => {
     drawModel = "square"
+    lockX=false;
+    lockY=false;
 }
 
 const setRectangle = () => {
     drawModel = "rectangle"
+    lockX=false;
+    lockY=false;
 }
 
 const choose = () => {
     drawModel=""
+    lockX=false;
+    lockY=false;
+}
+const lockXaxis = () =>{
+    lockX = true;
+}
 
+const lockYaxis = () =>{
+    lockY = true;
 }
 
 const isNearbyVertice = (e, vertice) => {
@@ -100,23 +115,23 @@ const mouseMoveListener = (e) => {
         let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
         dragModel = models[objectNum]
         if (dragModel == "rectangle") {
-            vertices[idx][0] = x;
-            vertices[idx][1] = y;
+            if(!lockX)vertices[idx][0] = x;
+            if(!lockY)vertices[idx][1] = y;
             if(vertexNum==3){
-                vertices[idx-1][1] = y;
-                vertices[idx-2][0] = x;
+                if(!lockY)vertices[idx-1][1] = y;
+                if(!lockX)vertices[idx-2][0] = x;
             }
             else if(vertexNum==2){
-                vertices[idx+1][1] = y;
-                vertices[idx-2][0] = x;
+                if(!lockY)vertices[idx+1][1] = y;
+                if(!lockX)vertices[idx-2][0] = x;
             }
             else if(vertexNum==1){
-                vertices[idx-1][1] = y;
-                vertices[idx+2][0] = x;
+                if(!lockY)vertices[idx-1][1] = y;
+                if(!lockX)vertices[idx+2][0] = x;
             }
             else if(vertexNum==0){
-                vertices[idx+1][1] = y;
-                vertices[idx+2][0] = x;
+                if(!lockY)vertices[idx+1][1] = y;
+                if(!lockX)vertices[idx+2][0] = x;
             }
                 
         } else if (dragModel == "line") {
@@ -212,6 +227,7 @@ const mouseMoveListener = (e) => {
 // color settings
 var colorPicker = [
     [0.0, 0.0, 0.0, 1.0],  // black
+    [1.0, 1.0, 1.0, 1.0],  // white
     [1.0, 0.0, 0.0, 1.0],  // red
     [1.0, 1.0, 0.0, 1.0],  // yellow
     [0.0, 1.0, 0.0, 1.0],  // green
