@@ -8,14 +8,8 @@ const objectNearby= (vertices,verticeNearby) =>{
 const isNearby = (e) => {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
-    let distanceVerticeNearby = vertices.map(function (vertice) {
-        return euclideanDistance(vertice, [x, y]);
-    })
-    distanceVerticeNearby.sort(function (a, b) {
-        return a - b;
-    })
-    let verticeNearby = distanceVerticeNearby.filter(function (distance) {
-        return distance < 0.05;
+    let verticeNearby = vertices.filter(function (vertice) {
+        return euclideanDistance(vertice, [x, y]) <0.05;
     })
     return verticeNearby;
 }

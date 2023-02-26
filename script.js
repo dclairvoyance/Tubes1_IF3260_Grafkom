@@ -119,10 +119,12 @@ const choose = () => {
 
 const lockXaxis = () => {
     lockX = true;
+    lockY=false;
 }
 
 const lockYaxis = () => {
     lockY = true;
+    lockX=false;
 }
 
 const addVertexBtn = document.getElementById("addVertexBtn");
@@ -208,7 +210,7 @@ const mouseMoveListener = (e) => {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
 
-    /*
+    
     // if drag vertex
     if (isDrag) {
         dragModel = models[objectNum]
@@ -285,7 +287,7 @@ const mouseMoveListener = (e) => {
 
         }
     }
-    */
+    
     // if move object
     if (isMove && contact.length > 0) {
         let {offset, verticesCount, } = countOffset(objectNum);
@@ -418,14 +420,14 @@ canvas.addEventListener('mousedown', (e) => {
 
     vertexNum = -1;
 
-    /*
+    
     let verticeNearby = isNearby(e)
     if (verticeNearby.length > 0){
         idx = objectNearby(vertices,verticeNearby[0]);
         objectNum,vertexNum,objectFirstNum = objectIdx(idxVertices,idx);
         isDrag = true
     }
-    */
+    
 
     // if add vertex
     if (isAddVertex) {
