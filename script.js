@@ -54,7 +54,6 @@ let isFirstVertex = true;
 let isLastVertex = true;
 let polygonsVertices = [];
 let countPolygonVertices = 0;
-let savedShape = [];
 
 const setPolygon = () => {
     // clicked
@@ -390,6 +389,7 @@ document.getElementById("save").addEventListener("click", function (e) {
     downloadAllShapes(savedShape, fileName, "text/plain");
 });
 
+//download all shapes in json format
 function downloadAllShapes(data, filename, type) {
     var file = new Blob([JSON.stringify(data)], {type: type});
     var a = document.createElement("a");
@@ -403,8 +403,20 @@ function downloadAllShapes(data, filename, type) {
     }, 0); 
 }
 
-//download all shapes in json format
-
+//load all configuration in array
+document.getElementById("load").addEventListener("change", function (e){
+    let newReader = new FileReader();
+    newReader.readAsText(e.target.files[0]);
+    newReader.onload = function (e){
+        let data = JSON.parse(e.target.result);
+        models = data[0];
+        vertices = data[1];
+        colors = data[2];
+        polygonsVertices = data[3];
+        
+    }
+    render()
+});
 
 
 gl.viewport(0, 0, canvas.width, canvas.height);
