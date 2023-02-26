@@ -23,6 +23,14 @@
             <h1>Toolbar</h1>
             <div class="toolbar">
                 <div class="tool">
+                    <div>
+                        <h3>Log:</h3>
+                        <p id="log"></p>
+                        <h3>Current focus:</h3>
+                        <p id="current"></p>
+                    </div>
+                </div>
+                <div class="tool">
                     <h2>New Object</h2>
                     <div class="button-group">
                         <button id="polygonBtn" onclick="setPolygon()">Polygon</button>
@@ -48,7 +56,12 @@
                         <div>
                             <h3>Rectangle</h3>
                             <button onClick="lockYaxis()">Lock Y Axis</button>
-                            <button onClick="lockXaxis()">Lock X AXis</button>
+                            <button onClick="lockXaxis()">Lock X Axis</button>
+                        </div>
+                        <div>
+                            <h3>Polygon</h3>
+                            <button id="addVertexBtn" onclick="addVertex()">Add Vertex</button>
+                            <button id="delVertexBtn" onclick="delVertex()">Delete Vertex</button>
                         </div>
                         <div>
                             <h3>Color</h3>
@@ -65,28 +78,16 @@
                             <button id="changeColor">Change Color</button>
                         </div>
                         <div>
-                            <h3>Polygon Vertices</h3>
-                            <button id="addVertexBtn" onclick="addVertex()">Add Vertex</button>
-                            <button id="delVertexBtn" onclick="delVertex()">Delete Vertex</button>
-                        </div>
-                        <div>
                             <h3>Transformation</h3>
                             <button id="moveBtn" onclick="move()">Move</button>
                             <button id="scaleBtn" onclick="scale()">Scale</button>
                         </div>
-                </div>
-                <div class="tool">
-                    <h2>Utilities</h2>
-                    <div>
-                        <p id="log"></p>
-                        <h3>Current focus:</h3>
-                        <p id="current"></p>
-                    </div>
-                    <div class="button-saveload">
-                        <input type="text" id="filename" placeholder="Create New Title">
-                        <button id="save">Save</button>
-                        <input type="file" id="load" accept=".json,application/json">
-                    </div>
+                        <div class="button-saveload">
+                            <h3>Save/Load</h3>
+                            <input type="text" id="filename" placeholder="Create New Title">
+                            <button id="save">Save</button>
+                            <input type="file" id="load" accept=".json,application/json">
+                        </div>
                 </div>
             </div>
         </div>

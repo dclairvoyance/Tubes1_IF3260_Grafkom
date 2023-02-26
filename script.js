@@ -31,7 +31,6 @@ let isDown = false; // true when mouse is clicked
 let cursor = false; // true when button cursor pressed. Used for vertex drag
 let isDrag = false;
 let isAddVertex = false;
-let isDeleteVertex = false;
 let isMove = false;
 let isScale = false;
 let isDraw = true;
@@ -75,6 +74,8 @@ const setPolygon = () => {
     // clicked
     if (polygonBtn.classList.contains("btnClicked")) {
         polygonBtn.classList.remove("btnClicked");
+        drawModel = "";
+        log.innerHTML = "";
     } 
     // not clicked
     else {
@@ -113,8 +114,8 @@ const setRectangle = () => {
 
 const choose = () => {
     drawModel = "";
-    lockX=false;
-    lockY=false;
+    lockX = false;
+    lockY = false;
 }
 
 const lockXaxis = () => {
@@ -149,6 +150,36 @@ const addVertex = () => {
 
 const delVertexBtn = document.getElementById("delVertexBtn");
 const delVertex = () => {
+    // no object is clicked
+    if (objectNum == -1) {
+        log.innerHTML = "Pick a polygon.";
+    }
+    // no vertex is clicked
+    else if (objectNum != -1 && vertexNum == -1) {
+        log.innerHTML = "Pick a vertex of a polygon.";
+    }
+    // vertex is clicked
+    else {
+        let isPolygon = (models[objectNum - 1] == "polygon");
+        let {offset, verticesCount, countPolygon} = countOffset(objectNum);
+        // object is polygon
+        if (isPolygon && polygonsVertices[countPolygon - 1] != 0) {
+            if (verticesCount > 3) {
+                log.innerHTML = "Deleting a vertex.";
+                vertices.splice(offset + vertexNum - 1, 1);
+                colors.splice(offset + vertexNum - 1, 1);
+                polygonsVertices[countPolygon - 1] = verticesCount - 1;
+                let classRemove = ".shape" + objectNum + "vertex" + vertexNum;
+                document.querySelectorAll(classRemove).forEach(e => e.remove());
+            }
+            else {
+                log.innerHTML = "Polygon needs at least 3 sides.";
+            }
+        }
+        else {
+            log.innerHTML = "Not a polygon.";
+        }
+    }
 }
 
 const moveBtn = document.getElementById("moveBtn");
@@ -162,6 +193,10 @@ const move = () => {
     } 
     // not clicked
     else {
+        if (isScale) {
+            scaleBtn.classList.remove("btnClicked");
+            isScale = false;
+        }
         // no object is clicked
         if (objectNum == -1) {
             log.innerHTML = "Pick an object.";
@@ -187,6 +222,10 @@ const scale = () => {
     } 
     // not clicked
     else {
+        if (isMove) {
+            moveBtn.classList.remove("btnClicked");
+            isMove = false;
+        }
         // no object is clicked
         if (objectNum == -1) {
             log.innerHTML = "Pick an object.";
@@ -208,7 +247,6 @@ const mouseMoveListener = (e) => {
     let x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     let y = 1 - (2 * (e.clientY - offsetCorr - canvas.offsetTop)) / canvas.clientHeight;
 
-    /*
     // if drag vertex
     if (isDrag) {
         dragModel = models[objectNum]
@@ -285,7 +323,6 @@ const mouseMoveListener = (e) => {
 
         }
     }
-    */
     // if move object
     if (isMove && contact.length > 0) {
         let {offset, verticesCount, } = countOffset(objectNum);
@@ -418,15 +455,12 @@ canvas.addEventListener('mousedown', (e) => {
 
     vertexNum = -1;
 
-    /*
-    let verticeNearby = isNearby(e)
+    let verticeNearby = isNearby(e);
     if (verticeNearby.length > 0){
         idx = objectNearby(vertices,verticeNearby[0]);
         objectNum,vertexNum,objectFirstNum = objectIdx(idxVertices,idx);
         isDrag = true
     }
-    */
-
     // if add vertex
     if (isAddVertex) {
         let {offset, verticesCount, countPolygon} = countOffset(objectNum);
@@ -453,7 +487,6 @@ canvas.addEventListener('mousedown', (e) => {
     // if scale object
     else if (isScale) {
         let {offset, verticesCount, polygonCount} = countOffset(objectNum);
-        console.log("yes");
         vertices.slice(offset, offset + verticesCount).forEach(function (item) {
             // check x
             if (item[0] < verticesSquare[0][0]) {
@@ -584,6 +617,8 @@ canvas.addEventListener("mouseup", (e) => {
             newButtonVertex.innerText = "Vertex " + (i + 1)
             newButtonVertex.value = i + 1
             newButtonVertex.classList.add(classAdd);
+            let classAddVertex = "shape" + models.length + "vertex" + (i + 1);
+            newButtonVertex.classList.add(classAddVertex);
             newButtonVertex.onclick = function () {
                 objectNum = newButtonObject.value;
                 vertexNum = i + 1;
@@ -700,7 +735,7 @@ function render() {
         }
         else if (models[i] == "polygon") {
             gl.drawArrays(gl.POINTS, offsetBuffer, polygonsVertices[polygonCount]);
-            gl.drawArrays(gl.TRIANGLE_STRIP, offsetBuffer, polygonsVertices[polygonCount]);
+            gl.drawArrays(gl.TRIANGLE_FAN, offsetBuffer, polygonsVertices[polygonCount]);
             offsetBuffer += polygonsVertices[polygonCount];
             polygonCount++;
         }

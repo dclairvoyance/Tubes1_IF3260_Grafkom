@@ -46,7 +46,6 @@
 }
 
 .tool {
-    margin-top: 20px;
     margin-bottom: 20px;
 }
 
@@ -57,6 +56,11 @@ button {
 }
 
 h2 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+h3 {
     margin-top: 10px;
     margin-bottom: 10px;
 }
@@ -75,6 +79,13 @@ h2 {
 
 #listObject {
     margin-top: 10%;
+    height: 90%;
+    overflow: hidden; 
+    overflow-y: scroll;
+}
+
+.toolbar {
+    margin-top: 5%;
     height: 90%;
     overflow: hidden; 
     overflow-y: scroll;
