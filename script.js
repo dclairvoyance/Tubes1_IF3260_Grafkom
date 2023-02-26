@@ -391,14 +391,8 @@ document.getElementById("save").addEventListener("click", function (e) {
 });
 
 //download all shapes in json format
-function downloadAllShapes(data, filename, type) {
-    var file = new Blob([JSON.stringify(data)], {type: type});
-    const a = document.createElement("a")
-    a.href = URL.createObjectURL(file);
-    a.download(filename)
-    document.body.appendChild(link)
-    a.click()
-}  
+
+
 
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.8, 0.8, 0.8, 1.0);
